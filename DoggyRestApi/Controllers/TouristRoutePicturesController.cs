@@ -2,8 +2,10 @@
 using DoggyRestApi.DTOs;
 using DoggyRestApi.Models;
 using DoggyRestApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace DoggyRestApi.Controllers
 {
@@ -44,6 +46,8 @@ namespace DoggyRestApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
+        [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to add pictures
         public async Task<IActionResult> AddPictures4TouristRoute([FromRoute] Guid touristRouteId, [FromBody] List<NewTouristRoutePictureDTO>? newTouristRoutePicturesDTO)
         {
             if (newTouristRoutePicturesDTO == null || newTouristRoutePicturesDTO.Count <= 0)

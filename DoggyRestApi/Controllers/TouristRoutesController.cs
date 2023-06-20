@@ -4,11 +4,9 @@ using DoggyRestApi.Helper;
 using DoggyRestApi.Models;
 using DoggyRestApi.ResourceParameters;
 using DoggyRestApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace DoggyRestApi.Controllers
 {
@@ -53,7 +51,10 @@ namespace DoggyRestApi.Controllers
             return Ok(touristRouteDto);
         }
 
+
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
+        [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to create a tourist route
         public IActionResult CreateTouristRoute([FromBody] NewTouristRouteDTO newTouristRouteDto)
         {
             if (!ModelState.IsValid)
@@ -71,28 +72,30 @@ namespace DoggyRestApi.Controllers
         }
 
 
-        [HttpPut("{touristRouteId}")]
-        public async Task<IActionResult> UpdateTouristRoute([FromRoute] Guid touristRouteId, [FromBody] UpdateTouristRouteDTO updateTouristRouteDTO)
-        {
+        //[HttpPut("{touristRouteId}")]
+        //public async Task<IActionResult> UpdateTouristRoute([FromRoute] Guid touristRouteId, [FromBody] UpdateTouristRouteDTO updateTouristRouteDTO)
+        //{
 
-            TouristRoute? touristRouteFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
-            if (touristRouteFromRepo == null)
-            {
-                return NotFound(new { err = $"Tourist Route ID {touristRouteId} not found!" });
-            }
+        //    TouristRoute? touristRouteFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
+        //    if (touristRouteFromRepo == null)
+        //    {
+        //        return NotFound(new { err = $"Tourist Route ID {touristRouteId} not found!" });
+        //    }
 
-            touristRouteFromRepo = mapper.Map<TouristRoute>(updateTouristRouteDTO);
+        //    touristRouteFromRepo = mapper.Map<TouristRoute>(updateTouristRouteDTO);
 
-            if (touristRouteRepository.Save())
-            {
-                return CreatedAtAction("GetTouristRouteById", new { touristRouteId }, touristRouteFromRepo);
-            }
+        //    if (touristRouteRepository.Save())
+        //    {
+        //        return CreatedAtAction("GetTouristRouteById", new { touristRouteId }, touristRouteFromRepo);
+        //    }
 
-            return BadRequest(new { err = "internal error " });
-        }
+        //    return BadRequest(new { err = "internal error " });
+        //}
 
 
         [HttpPatch("{touristRouteId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
+        [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to update a tourist route
         public async Task<IActionResult> PartiallyUpdateTouristRoute([FromRoute] Guid touristRouteId, [FromBody] JsonPatchDocument<UpdateTouristRouteDTO> patchDoc)
         {
             TouristRoute? touristRouteFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
@@ -118,6 +121,8 @@ namespace DoggyRestApi.Controllers
         }
 
         [HttpDelete("{touristRouteId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
+        [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to delete a tourist route
         public async Task<IActionResult> DeleteTouristRoute([FromRoute] Guid touristRouteId)
         {
             TouristRoute? touristRouteFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
