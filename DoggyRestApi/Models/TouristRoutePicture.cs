@@ -10,11 +10,11 @@ namespace DoggyRestApi.Models
         public int Id { get; set; }
 
         [MaxLength(100)]
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
 
         [ForeignKey("TouristRouteId")]
         public Guid TouristRouteId { get; set; }
-        public TouristRoute TouristRoute { get; set; }
+        public TouristRoute? TouristRoute { get; set; }
 
     }
 }

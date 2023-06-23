@@ -2,6 +2,6 @@
 {
     public class NewTouristRoutePictureDTO
     {
-        public string PictureName { get; set; }
+        public string PictureName { get; set; } = string.Empty;
     }
 }

@@ -101,7 +101,7 @@ namespace DoggyRestApi
 
                 app.Run();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //logger.Error(ex, "Stopped program because of exception");
             }
