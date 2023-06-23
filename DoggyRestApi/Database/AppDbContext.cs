@@ -4,16 +4,19 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json;
 using System.Xml;
 
 namespace DoggyRestApi.Database
 {
-    public class AppDbContext : IdentityDbContext<ProjectIdentityUser>  // DbContext
+    public class AppDbContext : DbContext//  IdentityDbContext<ProjectIdentityUser>  
     {
-        public DbSet<TouristRoute>? TouristRoutes { get; set; }
-        public DbSet<TouristRoutePicture>? TouristRoutePictures { get; set; }
+
+        public DbSet<TouristRoute> TouristRoutes { get; set; }
+
+        public DbSet<TouristRoutePicture> TouristRoutePictures { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -22,6 +25,7 @@ namespace DoggyRestApi.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             //Import tourist routes for test
             string touristRouteJson = File.ReadAllText(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/Database/touristRoutesMockData.json");
             IList<TouristRoute>? touristRoute = JsonConvert.DeserializeObject<IList<TouristRoute>>(touristRouteJson);
@@ -34,6 +38,7 @@ namespace DoggyRestApi.Database
             if (touristRoutePictures != null && touristRoutePictures.Count > 0)
                 modelBuilder.Entity<TouristRoutePicture>().HasData(touristRoutePictures);
 
+#if false
 
 
             modelBuilder.Entity<ProjectIdentityUser>(u =>
@@ -41,10 +46,11 @@ namespace DoggyRestApi.Database
                                                         WithOne().
                                                         HasForeignKey(ur => ur.UserId).
                                                         IsRequired());
+                                                        IsRequired());
 
-            
+
             //Create a test admin role
-            string adminRoleId = Guid.NewGuid().ToString();
+            string adminRoleId = "3517dc69-c27d-46c8-91c9-be03898edbba";
             modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole()
             {
                 Id = adminRoleId,
@@ -53,7 +59,7 @@ namespace DoggyRestApi.Database
             });
 
             //Create a test admin user
-            string adminUserId = Guid.NewGuid().ToString();
+            string adminUserId = "c530a290-8c97-4f5d-a6ed-30a0bc3908d3";
             ProjectIdentityUser adminUser01 = new ProjectIdentityUser()
             {
                 Id = adminUserId,
@@ -75,7 +81,8 @@ namespace DoggyRestApi.Database
             {
                 RoleId = adminRoleId,
                 UserId = adminUserId
-            });
+            }); 
+#endif
 
 
             base.OnModelCreating(modelBuilder);
@@ -84,7 +91,7 @@ namespace DoggyRestApi.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.LogTo(Console.WriteLine);
+            optionsBuilder.LogTo(Console.WriteLine, minimumLevel: LogLevel.Information);
         }
 
 

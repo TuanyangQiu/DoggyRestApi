@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoggyRestApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230604112155_initialMigration2")]
-    partial class initialMigration2
+    [Migration("20230623021526_Add_Column_For_Model_TouristRoute")]
+    partial class Add_Column_For_Model_TouristRoute
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,6 +32,9 @@ namespace DoggyRestApi.Migrations
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("DepartureCity")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("DepartureTime")
                         .HasColumnType("datetime2");
@@ -59,10 +62,19 @@ namespace DoggyRestApi.Migrations
                     b.Property<decimal>("OriginalPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<double?>("Rating")
+                        .HasColumnType("float");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("TravelDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TripType")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
