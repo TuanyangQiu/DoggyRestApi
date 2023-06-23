@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/DoggyRestApi/Database/touristRoutePicturesMockData.json_ori
+/DoggyRestApi/Database/touristRoutesMockData.json_ori

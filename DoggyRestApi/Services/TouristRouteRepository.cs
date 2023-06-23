@@ -1,6 +1,9 @@
 ﻿using DoggyRestApi.Database;
 using DoggyRestApi.Models;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 
 namespace DoggyRestApi.Services
 {
@@ -66,29 +69,49 @@ namespace DoggyRestApi.Services
 
         public Task<TouristRoute?> GetTouristRouteByIdAsync(Guid touristRouteId)
         {
-            return _appDbContext.TouristRoutes.Include(i => i.TouristRoutePictures).FirstOrDefaultAsync(i => i.Id.Equals(touristRouteId));
+
+            return _appDbContext.TouristRoutes.
+                                 Include(i => i.TouristRoutePictures).
+                                 FirstOrDefaultAsync(i => i.Id.Equals(touristRouteId));
         }
 
-        public async Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(string? keyword, string? operation, int? score)
+        public async Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam? parameters)
         {
+            //没有条件，不应该全部返回！待完善！！！
             IQueryable<TouristRoute> result = _appDbContext.TouristRoutes.Include(i => i.TouristRoutePictures);
+            if (parameters == null)
+                return await result.Take(5).ToListAsync();
+
+            //Filter out tourist routes with a rating higher than the specified value
+            if (parameters.Rating > 0)
+                result = result.Where(i => i.Rating >= parameters.Rating);
+
+            //Filter out tourist routes that match the specified id
+            if (parameters.Id?.Count > 0)
+                result = result.Where(i => parameters.Id.Any(j => j.Equals(i.Id)));
+
+            //keyword match
+            if (!string.IsNullOrWhiteSpace(parameters.Keyword))
+                result = result.Where(t => t.Title.ToLower().Contains(parameters.Keyword.ToLower()));
 
 
-            if (!string.IsNullOrWhiteSpace(keyword))
-            {
-                keyword = keyword.Trim();
-                result = result.Where(i => i.Title.Contains(keyword));
-            }
 
-            if (!string.IsNullOrWhiteSpace(operation) && score > 0)
-            {
-                result = operation.ToLower() switch
-                {
-                    "largerthan" => result.Where(i => i.Rating > score),
-                    "lessthan" => result.Where(i => i.Rating < score),
-                    _ => result.Where(i => i.Rating == score),
-                };
-            }
+            ////Find out tourist routes whose Title or Description contain these keywords
+            //if (parameters.Keywords != null)
+            //{
+            //    result = result.Select(touristRoute =>
+            //    new
+            //    {
+            //        matchedTouristRoute = touristRoute,
+            //        matchedCount = parameters.Keywords.Count(
+            //          kw => touristRoute.Title.Contains(kw) || touristRoute.Description.Contains(kw))
+            //    }).
+            //    //filter out unmatched tourist routes
+            //    Where(item => item.matchedCount > 0).
+            //    //The more matches of keywords a tourist route has, the higher its ranked
+            //    OrderByDescending(matchedItem => matchedItem.matchedCount).
+            //    Select(matchedItem => matchedItem.matchedTouristRoute);
+            //}
 
             return await result.ToListAsync();
         }
@@ -98,10 +121,9 @@ namespace DoggyRestApi.Services
             return _appDbContext.TouristRoutes.AnyAsync(i => i.Id.Equals(touristRouteId));
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            int iRet = _appDbContext.SaveChanges();
-            return iRet >= 0;
+            return await _appDbContext.SaveChangesAsync() >= 0;
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using DoggyRestApi.Models;
+﻿using DoggyRestApi.DTOs;
+using DoggyRestApi.Models;
 
 namespace DoggyRestApi.Services
 {
     public interface ITouristRouteRepository
     {
-        public Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(string? keyword, string? operation, int? score);
+        public Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam? parameters);
 
         public Task<TouristRoute?> GetTouristRouteByIdAsync(Guid touristRouteId);
 
@@ -16,7 +17,7 @@ namespace DoggyRestApi.Services
 
         public void AddTouristRoute(TouristRoute touristRoute);
 
-        public bool Save();
+        public Task<bool> SaveAsync();
 
         public Task AddTouristRoutePictures(Guid touristRouteId, ICollection<TouristRoutePicture> touristRoutePicture);
 

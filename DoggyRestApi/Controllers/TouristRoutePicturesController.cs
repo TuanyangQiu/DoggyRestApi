@@ -25,9 +25,8 @@ namespace DoggyRestApi.Controllers
         {
             var touristRoutePictures = await touristRouteRepository.GetPicturesByIdAsync(touristRouteId);
             if (touristRoutePictures?.Count() <= 0)
-            {
                 return NotFound(new { err = $"Cannot find pictures with Id {touristRouteId} !" });
-            }
+            
 
             ICollection<TouristRoutePictureDTO> touristRoutePictureDto = mapper.Map<ICollection<TouristRoutePictureDTO>>(touristRoutePictures);
             return Ok(touristRoutePictureDto);
@@ -51,29 +50,20 @@ namespace DoggyRestApi.Controllers
         public async Task<IActionResult> AddPictures4TouristRoute([FromRoute] Guid touristRouteId, [FromBody] List<NewTouristRoutePictureDTO>? newTouristRoutePicturesDTO)
         {
             if (newTouristRoutePicturesDTO == null || newTouristRoutePicturesDTO.Count <= 0)
-            {
                 return BadRequest(new { err = "No input picture name" });
-            }
 
             if (!(await touristRouteRepository.IsTouristRouteExistAsync(touristRouteId)))
-            {
                 return NotFound(new { err = $"Tourist Route ID {touristRouteId} not found!" });
-            }
 
             if (newTouristRoutePicturesDTO.Any(i => string.IsNullOrWhiteSpace(i.PictureName)))
-            {
                 return BadRequest(new { err = $"PictureName cannot be empty!" });
-            }
 
             var touristRoutePicture = mapper.Map<List<TouristRoutePicture>>(newTouristRoutePicturesDTO);
             await touristRouteRepository.AddTouristRoutePictures(touristRouteId, touristRoutePicture);
-            if (touristRouteRepository.Save())
-            {
+            if (await touristRouteRepository.SaveAsync())
                 return CreatedAtRoute(nameof(GetPicturesByTouristRouteId), new { touristRouteId = touristRouteId }, touristRoutePicture);
-            }
 
-
-            return BadRequest(new { err = "internal error " });
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
 

@@ -2,7 +2,6 @@
 using DoggyRestApi.DTOs;
 using DoggyRestApi.Helper;
 using DoggyRestApi.Models;
-using DoggyRestApi.ResourceParameters;
 using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -26,71 +25,51 @@ namespace DoggyRestApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllTouristRoutes([FromQuery] TouristRouteResourceParameters parameters /*, [FromQuery] string keyword, [FromQuery] string rating*/)
+        public async Task<IActionResult> GetAllTouristRoutes([FromQuery] QueryTouristRoutesParamDTO parameters)
         {
-            var touristRoutesFromRepo = await touristRouteRepository.GetTouristRoutesAsync(parameters?.Keyword, parameters?.OperationType, parameters?.Score);
+            var touristRoutesFromRepo = await touristRouteRepository.GetTouristRoutesAsync(mapper.Map<QueryTouristRoutesParam>(parameters));
             if (touristRoutesFromRepo?.Count() <= 0)
-            {
                 return NotFound(new { err = "No data can be queried out from repository!" });
-            }
+
 
             IEnumerable<TouristRouteDTO> touristRouteDto = mapper.Map<IEnumerable<TouristRouteDTO>>(touristRoutesFromRepo);
             return Ok(touristRouteDto);
         }
 
-        [HttpGet("{touristRouteId}", Name = "GetTouristRouteById")]
-        public async Task<IActionResult> GetTouristRouteById([FromRoute] Guid touristRouteId)
-        {
-            var touristRoutesFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
-            if (touristRoutesFromRepo == null)
-            {
-                return NotFound(new { err = $"The tourist route with id {touristRouteId} cannot be found!" });
-            }
+        //[HttpGet("{id}", Name = "GetTouristRouteById")]
+        //public async Task<IActionResult> GetTouristRouteByIds([FromRoute] List<Guid> id)
+        //{
 
-            TouristRouteDTO touristRouteDto = mapper.Map<TouristRouteDTO>(touristRoutesFromRepo);
-            return Ok(touristRouteDto);
-        }
+        //    var touristRoutesFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
+        //    if (touristRoutesFromRepo == null)
+        //    {
+        //        return NotFound(new { err = $"The tourist route with id {touristRouteId} cannot be found!" });
+        //    }
+
+        //    TouristRouteDTO touristRouteDto = mapper.Map<TouristRouteDTO>(touristRoutesFromRepo);
+        //    return Ok(touristRouteDto);
+        //}
 
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
         [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to create a tourist route
-        public IActionResult CreateTouristRoute([FromBody] NewTouristRouteDTO newTouristRouteDto)
+        public async Task<IActionResult> CreateTouristRoute([FromBody] NewTouristRouteDTO newTouristRouteDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
             TouristRoute newTouristRoute = mapper.Map<TouristRoute>(newTouristRouteDto);
             touristRouteRepository.AddTouristRoute(newTouristRoute);
-            touristRouteRepository.Save();
+            if (await touristRouteRepository.SaveAsync())
+            {
+                TouristRouteDTO touristRouteDtoToReturn = mapper.Map<TouristRouteDTO>(newTouristRoute);
+                return CreatedAtAction("GetTouristRouteById", new { id = touristRouteDtoToReturn.Id }, touristRouteDtoToReturn);
+            }
 
-            TouristRouteDTO touristRouteDtoToReturn = mapper.Map<TouristRouteDTO>(newTouristRoute);
-
-            return CreatedAtAction("GetTouristRouteById", new { id = touristRouteDtoToReturn.Id }, touristRouteDtoToReturn);
+            return StatusCode(StatusCodes.Status500InternalServerError);
 
         }
-
-
-        //[HttpPut("{touristRouteId}")]
-        //public async Task<IActionResult> UpdateTouristRoute([FromRoute] Guid touristRouteId, [FromBody] UpdateTouristRouteDTO updateTouristRouteDTO)
-        //{
-
-        //    TouristRoute? touristRouteFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
-        //    if (touristRouteFromRepo == null)
-        //    {
-        //        return NotFound(new { err = $"Tourist Route ID {touristRouteId} not found!" });
-        //    }
-
-        //    touristRouteFromRepo = mapper.Map<TouristRoute>(updateTouristRouteDTO);
-
-        //    if (touristRouteRepository.Save())
-        //    {
-        //        return CreatedAtAction("GetTouristRouteById", new { touristRouteId }, touristRouteFromRepo);
-        //    }
-
-        //    return BadRequest(new { err = "internal error " });
-        //}
 
 
         [HttpPatch("{touristRouteId}")]
@@ -113,7 +92,7 @@ namespace DoggyRestApi.Controllers
             mapper.Map(updateTouristRouteDto, touristRouteFromRepo);
             touristRouteFromRepo.Id = touristRouteId;
 
-            if (touristRouteRepository.Save())
+            if (await touristRouteRepository.SaveAsync())
                 return CreatedAtAction("GetTouristRouteById", new { touristRouteId }, updateTouristRouteDto);
 
 
@@ -131,21 +110,21 @@ namespace DoggyRestApi.Controllers
 
 
             touristRouteRepository.DeleteTouristRoute(touristRouteFromRepo);
-            if (touristRouteRepository.Save())
-                return NoContent();
+            if (await touristRouteRepository.SaveAsync())
+                return Ok(new { message = "successfully deleted" });
 
-            return BadRequest(new { err = "internal error " });
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
 
-        [HttpGet("({touristRouteIds})")]
-        public IActionResult GetMultipleTouristRouteByIds(
-            [ModelBinder(BinderType = typeof(ArrayModelBinder))][FromRoute] IEnumerable<Guid> touristRouteIds)
-        {
+        //[HttpGet("({touristRouteIds})")]
+        //public IActionResult GetMultipleTouristRouteByIds(
+        //    [ModelBinder(BinderType = typeof(ArrayModelBinder))][FromRoute] IEnumerable<Guid> touristRouteIds)
+        //{
 
 
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
     }
 }
