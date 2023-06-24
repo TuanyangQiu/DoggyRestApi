@@ -1,46 +1,46 @@
 [
   {
-    "id": "1 ",
+    "id": "1",
     "TouristRouteId": "6e5e8533-9e02-40e7-b6f3-3ee549d64301",
     "url": "Sydney_12345.jpg"
   },
   {
-    "id": "2 ",
+    "id": "2",
     "TouristRouteId": "6e5e8533-9e02-40e7-b6f3-3ee549d64301",
     "url": "Melbourne_67890.jpg"
   },
   {
-    "id": "3 ",
+    "id": "3",
     "TouristRouteId": "6e5e8533-9e02-40e7-b6f3-3ee549d64301",
     "url": "Brisbane_23456.jpg"
   },
   {
-    "id": "4 ",
+    "id": "4",
     "TouristRouteId": "7c9a105f-777e-4ed5-93c1-4d26c246d4c5",
     "url": "Perth_34567.jpg"
   },
   {
-    "id": "5 ",
+    "id": "5",
     "TouristRouteId": "7c9a105f-777e-4ed5-93c1-4d26c246d4c5",
     "url": "Adelaide_78901.jpg"
   },
   {
-    "id": "6 ",
+    "id": "6",
     "TouristRouteId": "7c9a105f-777e-4ed5-93c1-4d26c246d4c5",
     "url": "Auckland_45678.jpg"
   },
   {
-    "id": "7 ",
+    "id": "7",
     "TouristRouteId": "5342e7fe-3b03-495f-9b4c-08fcfa1ea4fb",
     "url": "Wellington_90123.jpg"
   },
   {
-    "id": "8 ",
+    "id": "8",
     "TouristRouteId": "5342e7fe-3b03-495f-9b4c-08fcfa1ea4fb",
     "url": "Christchurch_56789.jpg"
   },
   {
-    "id": "9 ",
+    "id": "9",
     "TouristRouteId": "5342e7fe-3b03-495f-9b4c-08fcfa1ea4fb",
     "url": "GoldCoast_23456.jpg"
   },

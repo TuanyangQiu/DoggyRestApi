@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoggyRestApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230623043104_insert_testData_TouristRoute_And_TouristRoutePicture")]
-    partial class insert_testData_TouristRoute_And_TouristRoutePicture
+    [Migration("20230624222502_insert_TestData_TouristRoute_And_TouristRoutePictures")]
+    partial class insert_TestData_TouristRoute_And_TouristRoutePictures
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

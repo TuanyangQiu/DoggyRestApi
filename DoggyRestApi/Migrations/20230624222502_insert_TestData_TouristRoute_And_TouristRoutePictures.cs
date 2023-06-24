@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoggyRestApi.Migrations
 {
-    public partial class insert_testData_TouristRoute_And_TouristRoutePicture : Migration
+    public partial class insert_TestData_TouristRoute_And_TouristRoutePictures : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
