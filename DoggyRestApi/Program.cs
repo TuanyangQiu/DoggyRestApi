@@ -81,7 +81,8 @@ namespace DoggyRestApi
                 // Configure the HTTP request pipeline.
                 if (!app.Environment.IsDevelopment())
                 {
-                    app.UseExceptionHandler("/Home/Error");
+                    //app.UseStatusCodePagesWithReExecute("/Error/HandleErrorCode/{0}");
+                    app.UseExceptionHandler("/Error/HandleGlobalException");
                     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                     app.UseHsts();
                 }
