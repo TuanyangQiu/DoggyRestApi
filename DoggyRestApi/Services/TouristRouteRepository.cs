@@ -45,6 +45,15 @@ namespace DoggyRestApi.Services
 
         }
 
+        public void CreateShoppingCart(ShoppingCart shoppingCart)
+        {
+            ArgumentNullException.ThrowIfNull(shoppingCart);
+
+
+            _appDbContext.shoppingCarts.Add(shoppingCart);
+        }
+
+
         public void DeleteTouristRoute(TouristRoute touristRoute)
         {
             if (touristRoute == null)
@@ -58,6 +67,17 @@ namespace DoggyRestApi.Services
             return await _appDbContext.TouristRoutePictures.Where(
                 i =>
                 i.TouristRouteId.Equals(touristRouteId)).ToListAsync();
+        }
+
+        public async Task<ShoppingCart?> GetShoppingCartById(string userId)
+        {
+            ArgumentNullException.ThrowIfNull(userId);
+
+            return await _appDbContext.shoppingCarts.
+                  Include(i => i.Owner).
+                  Include(i => i.LineItems).
+                  Where(cart => userId.Equals(cart.OwnerId)).
+                  FirstOrDefaultAsync();
         }
 
         public Task<TouristRoutePicture?> GetSinglePictureByIdAsync(Guid touristRouteId, int pictureId)

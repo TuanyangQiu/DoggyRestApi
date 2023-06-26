@@ -23,5 +23,11 @@ namespace DoggyRestApi.Services
 
 
         public void DeleteTouristRoute(TouristRoute touristRoute);
+
+        public void CreateShoppingCart(ShoppingCart shoppingCart);
+
+        public Task<ShoppingCart?> GetShoppingCartById(string userId);
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace DoggyRestApi.Models
 {
@@ -8,6 +9,10 @@ namespace DoggyRestApi.Models
     public class ProjectIdentityUser : IdentityUser
     {
         public string? Address { get; set; }
+
+
+        [Required]
+        public ShoppingCart? ShoppingCart { get; set; }
 
         public virtual ICollection<IdentityUserRole<string>>? UserRoles { get; set; }
         public virtual ICollection<IdentityUserClaim<string>>? Claims { get; set; }

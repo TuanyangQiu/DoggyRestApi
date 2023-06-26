@@ -11,13 +11,18 @@ using System.Xml;
 
 namespace DoggyRestApi.Database
 {
-    public class AppDbContext : DbContext//  IdentityDbContext<ProjectIdentityUser>  
+    public class AppDbContext : IdentityDbContext<ProjectIdentityUser>  //DBContext
     {
 
         public DbSet<TouristRoute> TouristRoutes { get; set; }
 
         public DbSet<TouristRoutePicture> TouristRoutePictures { get; set; }
 
+        public DbSet<ProjectIdentityUser> ProjectIdentityUsers { get; set; }
+
+        public DbSet<ShoppingCart> shoppingCarts { get; set; }
+
+        
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
@@ -37,6 +42,13 @@ namespace DoggyRestApi.Database
             IList<TouristRoutePicture>? touristRoutePictures = JsonConvert.DeserializeObject<IList<TouristRoutePicture>>(touristRoutePicturesJson);
             if (touristRoutePictures != null && touristRoutePictures.Count > 0)
                 modelBuilder.Entity<TouristRoutePicture>().HasData(touristRoutePictures);
+
+            modelBuilder.Entity<ProjectIdentityUser>().
+                         HasMany(user => user.UserRoles).
+                         WithOne().
+                         HasForeignKey(user => user.UserId).
+                         IsRequired();
+
 
 #if false
 

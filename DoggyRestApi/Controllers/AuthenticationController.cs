@@ -1,5 +1,6 @@
 ﻿using DoggyRestApi.DTOs;
 using DoggyRestApi.Models;
+using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,14 +18,17 @@ namespace DoggyRestApi.Controllers
         private readonly IConfiguration configuration;
         private readonly UserManager<ProjectIdentityUser> userManager;
         private readonly SignInManager<ProjectIdentityUser> signInManager;
+        private readonly ITouristRouteRepository touristRouteRepository;
         public AuthenticationController(
             IConfiguration configuration,
             UserManager<ProjectIdentityUser> userManager,
-            SignInManager<ProjectIdentityUser> signInManager)
+            SignInManager<ProjectIdentityUser> signInManager,
+            ITouristRouteRepository touristRouteRepository)
         {
             this.configuration = configuration;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.touristRouteRepository = touristRouteRepository;
         }
 
 
@@ -83,9 +87,27 @@ namespace DoggyRestApi.Controllers
 
             //Step2. Insert new record for the new user
             var result = await userManager.CreateAsync(identityUser, registerNewUserDTO.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+            
+
+            //step3. Create a shopping cart for the new user
+            ShoppingCart shoppingCart = new ShoppingCart()
+            {
+                Id = Guid.NewGuid(),
+                OwnerId= identityUser.Id
+            };
+
+            touristRouteRepository.CreateShoppingCart(shoppingCart);
+            if (!await touristRouteRepository.SaveAsync())
+            {
+                //if saving the changes fails, delete the user so that new user can create account again using the same account name
+                await userManager.DeleteAsync(identityUser);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { err = "error occurred while create shopping cart" });
+            }
 
             if (result.Succeeded)
-                return Ok();
+                return Ok(new {message="The account has been successfully created"});
 
             return BadRequest(result.Errors);
         }
