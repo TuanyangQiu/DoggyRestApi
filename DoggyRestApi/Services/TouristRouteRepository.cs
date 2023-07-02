@@ -129,14 +129,12 @@ namespace DoggyRestApi.Services
 
         public async Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam? parameters)
         {
-            //没有条件，不应该全部返回！待完善！！！
             IQueryable<TouristRoute> result = _appDbContext.TouristRoutes.Include(i => i.TouristRoutePictures);
             if (parameters == null)
-                return await result.Take(5).ToListAsync();
+                parameters = new QueryTouristRoutesParam();//use default query parameters
 
             //Filter out tourist routes with a rating higher than the specified value
-            if (parameters.Rating > 0)
-                result = result.Where(i => i.Rating >= parameters.Rating);
+            result = result.Where(i => i.Rating >= parameters.Rating);
 
             //Filter out tourist routes that match the specified id
             if (parameters.Id?.Count > 0)
@@ -144,26 +142,15 @@ namespace DoggyRestApi.Services
 
             //keyword match
             if (!string.IsNullOrWhiteSpace(parameters.Keyword))
-                result = result.Where(t => t.Title.ToLower().Contains(parameters.Keyword.ToLower()));
+            {
+                string lowerKeyword = parameters.Keyword.ToLower();
+                result = result.Where(t => t.Title.ToLower().Contains(lowerKeyword));
+            }
 
+            //paging query
+            int skip = (parameters.PageNumber - 1) * parameters.PageSize;
+            result = result.Skip(skip).Take(parameters.PageSize);
 
-
-            ////Find out tourist routes whose Title or Description contain these keywords
-            //if (parameters.Keywords != null)
-            //{
-            //    result = result.Select(touristRoute =>
-            //    new
-            //    {
-            //        matchedTouristRoute = touristRoute,
-            //        matchedCount = parameters.Keywords.Count(
-            //          kw => touristRoute.Title.Contains(kw) || touristRoute.Description.Contains(kw))
-            //    }).
-            //    //filter out unmatched tourist routes
-            //    Where(item => item.matchedCount > 0).
-            //    //The more matches of keywords a tourist route has, the higher its ranked
-            //    OrderByDescending(matchedItem => matchedItem.matchedCount).
-            //    Select(matchedItem => matchedItem.matchedTouristRoute);
-            //}
 
             return await result.ToListAsync();
         }
