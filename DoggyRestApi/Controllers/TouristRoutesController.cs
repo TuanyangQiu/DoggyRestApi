@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DoggyRestApi.DTOs;
 using DoggyRestApi.Models;
+using DoggyRestApi.ResourceParameter;
 using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -15,7 +16,9 @@ namespace DoggyRestApi.Controllers
         private readonly ITouristRouteRepository touristRouteRepository;
         private readonly IMapper mapper;
         private readonly ILogger logger;
-        public TouristRoutesController(ITouristRouteRepository touristRouteRepository, IMapper mapper, ILogger<TouristRoutesController> logger)
+        public TouristRoutesController(ITouristRouteRepository touristRouteRepository,
+                                       IMapper mapper,
+                                       ILogger<TouristRoutesController> logger)
         {
             this.touristRouteRepository = touristRouteRepository;
             this.mapper = mapper;
@@ -25,9 +28,9 @@ namespace DoggyRestApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllTouristRoutes([FromQuery] QueryTouristRoutesParam parameters)
+        public async Task<IActionResult> GetAllTouristRoutes([FromQuery] QueryTouristRoutesParam parameters,[FromQuery] PaginationParam paginationParam)
         {
-            var touristRoutesFromRepo = await touristRouteRepository.GetTouristRoutesAsync(parameters);
+            var touristRoutesFromRepo = await touristRouteRepository.GetTouristRoutesAsync(parameters, paginationParam);
             if (touristRoutesFromRepo?.Count() <= 0)
                 return NotFound(new { err = "No data can be queried out from repository!" });
 

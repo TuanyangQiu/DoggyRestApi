@@ -1,9 +1,8 @@
 ﻿using DoggyRestApi.Database;
+using DoggyRestApi.Helper;
 using DoggyRestApi.Models;
-using Microsoft.AspNetCore.Routing;
+using DoggyRestApi.ResourceParameter;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 
 namespace DoggyRestApi.Services
 {
@@ -77,7 +76,7 @@ namespace DoggyRestApi.Services
             return await _appDbContext.Orders.Include(o => o.OrderItems).Where(o => o.Id == orderId).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Order>?> GetOrdersByUserIdAsync(string userId)
+        public async Task<List<Order>?> GetOrdersByUserIdAsync(string userId, PaginationParam paginationParam)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentNullException(userId);
@@ -87,10 +86,12 @@ namespace DoggyRestApi.Services
 
             string lowerUserId = userId.ToLower();
 
-            return await _appDbContext.Orders.
+            var result = _appDbContext.Orders.
                                        Include(o => o.OrderItems).ThenInclude(item => item.TouristRoute).
-                                       Where(o => o.OwnerId.ToLower() == lowerUserId).
-                                       ToListAsync();
+                                       Where(o => o.OwnerId.ToLower() == lowerUserId);
+
+            return await PagingQuery<Order>.QueryAsync(paginationParam, result);
+
 
         }
 
@@ -127,32 +128,29 @@ namespace DoggyRestApi.Services
                                  FirstOrDefaultAsync(i => i.Id.Equals(touristRouteId));
         }
 
-        public async Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam? parameters)
+        public async Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam queryParam, PaginationParam paginationParam)
         {
             IQueryable<TouristRoute> result = _appDbContext.TouristRoutes.Include(i => i.TouristRoutePictures);
-            if (parameters == null)
-                parameters = new QueryTouristRoutesParam();//use default query parameters
+
+            //use default parameters if input argument is null
+            if (queryParam == null)
+                queryParam = new QueryTouristRoutesParam();
 
             //Filter out tourist routes with a rating higher than the specified value
-            result = result.Where(i => i.Rating >= parameters.Rating);
+            result = result.Where(i => i.Rating >= queryParam.Rating);
 
             //Filter out tourist routes that match the specified id
-            if (parameters.Id?.Count > 0)
-                result = result.Where(i => parameters.Id.Any(j => j.Equals(i.Id)));
+            if (queryParam.Id?.Count > 0)
+                result = result.Where(i => queryParam.Id.Any(j => j.Equals(i.Id)));
 
             //keyword match
-            if (!string.IsNullOrWhiteSpace(parameters.Keyword))
+            if (!string.IsNullOrWhiteSpace(queryParam.Keyword))
             {
-                string lowerKeyword = parameters.Keyword.ToLower();
+                string lowerKeyword = queryParam.Keyword.ToLower();
                 result = result.Where(t => t.Title.ToLower().Contains(lowerKeyword));
             }
 
-            //paging query
-            int skip = (parameters.PageNumber - 1) * parameters.PageSize;
-            result = result.Skip(skip).Take(parameters.PageSize);
-
-
-            return await result.ToListAsync();
+            return await PagingQuery<TouristRoute>.QueryAsync(paginationParam, result);
         }
 
         public Task<bool> IsTouristRouteExistAsync(Guid touristRouteId)

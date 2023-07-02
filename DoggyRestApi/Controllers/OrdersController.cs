@@ -3,13 +3,11 @@ using DoggyRestApi.DTOs;
 using DoggyRestApi.Models;
 using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.ComponentModel.Design.Serialization;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using DoggyRestApi.ResourceParameter;
 
 namespace DoggyRestApi.Controllers
 {
@@ -36,19 +34,22 @@ namespace DoggyRestApi.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetOrders()
+        public async Task<IActionResult> GetOrders([FromQuery] PaginationParam paginationParam)
         {
             var userId = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrWhiteSpace(userId))
                 return NotFound(new { err = "The user does not exist" });
 
 
-            List<Order>? orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId);
+            List<Order>? orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
+            if (orders == null || orders.Count == 0)
+                return NotFound(new { err = "no order can be found!" });
+
             return Ok(_mapper.Map<List<OrderDTO>>(orders));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrderByOrderId([FromRoute] Guid id)
+        public async Task<IActionResult> GetOrderByOrderId([FromRoute] Guid id, PaginationParam paginationParam)
         {
             if (id == Guid.Empty)
                 return BadRequest(new { err = "order id cannot be empty!" });
@@ -57,7 +58,7 @@ namespace DoggyRestApi.Controllers
             if (string.IsNullOrWhiteSpace(userId))
                 return NotFound(new { err = "The user does not exist" });
 
-            List<Order>? orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId);
+            List<Order>? orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
             if (orders == null || orders.Count == 0)
                 return NoContent();
 

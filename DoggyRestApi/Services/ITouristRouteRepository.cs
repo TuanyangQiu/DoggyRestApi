@@ -1,10 +1,11 @@
 ﻿using DoggyRestApi.Models;
+using DoggyRestApi.ResourceParameter;
 
 namespace DoggyRestApi.Services
 {
     public interface ITouristRouteRepository
     {
-        public Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam? parameters);
+        public Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam queryParam, PaginationParam paginationParam);
 
         public Task<TouristRoute?> GetTouristRouteByIdAsync(Guid touristRouteId);
 
@@ -29,7 +30,7 @@ namespace DoggyRestApi.Services
 
         public Task AddOrderAsync(Order order);
 
-        public Task<List<Order>?> GetOrdersByUserIdAsync(string userId);
+        public Task<List<Order>?> GetOrdersByUserIdAsync(string userId, PaginationParam paginationParam);
 
         public Task<Order?> GetOrderByOrderId(Guid orderId);
     }
