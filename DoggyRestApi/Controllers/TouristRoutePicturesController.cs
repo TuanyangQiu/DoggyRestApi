@@ -3,13 +3,12 @@ using DoggyRestApi.DTOs;
 using DoggyRestApi.Models;
 using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace DoggyRestApi.Controllers
 {
     [Route("TouristRoutes/{touristRouteId}/Pictures")]
+    [ApiController]
     public class TouristRoutePicturesController : Controller
     {
         private readonly ITouristRouteRepository touristRouteRepository;
@@ -59,7 +58,7 @@ namespace DoggyRestApi.Controllers
                 return BadRequest(new { err = $"PictureName cannot be empty!" });
 
             var touristRoutePicture = mapper.Map<List<TouristRoutePicture>>(newTouristRoutePicturesDTO);
-            await touristRouteRepository.AddTouristRoutePictures(touristRouteId, touristRoutePicture);
+            await touristRouteRepository.AddTouristRoutePicturesAsync(touristRouteId, touristRoutePicture);
             if (await touristRouteRepository.SaveAsync())
                 return CreatedAtRoute(nameof(GetPicturesByTouristRouteId), new { touristRouteId = touristRouteId }, touristRoutePicture);
 

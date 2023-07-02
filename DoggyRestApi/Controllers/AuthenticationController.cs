@@ -12,6 +12,7 @@ namespace DoggyRestApi.Controllers
 {
 
     [Route("auth")]
+    [ApiController]
     public class AuthenticationController : ControllerBase
     {
 

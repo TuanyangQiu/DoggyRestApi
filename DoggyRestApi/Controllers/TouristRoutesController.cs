@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DoggyRestApi.DTOs;
-using DoggyRestApi.Helper;
 using DoggyRestApi.Models;
 using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DoggyRestApi.Controllers
 {
     [Route("[controller]")]
+    [ApiController]
     public class TouristRoutesController : ControllerBase
     {
         private readonly ITouristRouteRepository touristRouteRepository;
@@ -35,20 +35,6 @@ namespace DoggyRestApi.Controllers
             IEnumerable<TouristRouteDTO> touristRouteDto = mapper.Map<IEnumerable<TouristRouteDTO>>(touristRoutesFromRepo);
             return Ok(touristRouteDto);
         }
-
-        //[HttpGet("{id}", Name = "GetTouristRouteById")]
-        //public async Task<IActionResult> GetTouristRouteByIds([FromRoute] List<Guid> id)
-        //{
-
-        //    var touristRoutesFromRepo = await touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
-        //    if (touristRoutesFromRepo == null)
-        //    {
-        //        return NotFound(new { err = $"The tourist route with id {touristRouteId} cannot be found!" });
-        //    }
-
-        //    TouristRouteDTO touristRouteDto = mapper.Map<TouristRouteDTO>(touristRoutesFromRepo);
-        //    return Ok(touristRouteDto);
-        //}
 
 
         [HttpPost]
@@ -115,16 +101,5 @@ namespace DoggyRestApi.Controllers
 
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
-
-        //[HttpGet("({touristRouteIds})")]
-        //public IActionResult GetMultipleTouristRouteByIds(
-        //    [ModelBinder(BinderType = typeof(ArrayModelBinder))][FromRoute] IEnumerable<Guid> touristRouteIds)
-        //{
-
-
-
-        //    return Ok();
-        //}
     }
 }
