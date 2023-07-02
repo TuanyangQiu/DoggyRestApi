@@ -22,7 +22,8 @@ namespace DoggyRestApi.Database
 
         public DbSet<ShoppingCart> shoppingCarts { get; set; }
 
-        
+        public DbSet<Order> Orders { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 

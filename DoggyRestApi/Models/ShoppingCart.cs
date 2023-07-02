@@ -13,7 +13,7 @@ namespace DoggyRestApi.Models
 
         public ProjectIdentityUser Owner { get; set; }
 
-        public IList<LineItem> LineItems { get; set; } = new List<LineItem>();
+        public List<LineItem> LineItems { get; set; } = new List<LineItem>();
 
     }
 }

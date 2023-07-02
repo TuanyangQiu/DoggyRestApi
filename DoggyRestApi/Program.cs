@@ -75,6 +75,9 @@ namespace DoggyRestApi
                     .AddNewtonsoftJson()
                     .AddXmlDataContractSerializerFormatters();//allow respinsing in xml format
 
+                //Add httpclient for internal http request
+                builder.Services.AddHttpClient();
+
                 //logger.Info("Enter builder.Build()");
                 var app = builder.Build();
 

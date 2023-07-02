@@ -35,7 +35,7 @@ namespace DoggyRestApi.Controllers
                 return NotFound(new { err = "The user does not exist" });
 
 
-            ShoppingCart? shoppingCart = await _touristRouteRepository.GetShoppingCartById(userId);
+            ShoppingCart? shoppingCart = await _touristRouteRepository.GetShoppingCartByIdAsync(userId);
             if (shoppingCart == null)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                                   new { err = "The shopping cart information for the user cannot be retrived" });
@@ -56,7 +56,7 @@ namespace DoggyRestApi.Controllers
             if (string.IsNullOrWhiteSpace(userId))
                 return NotFound(new { err = "The user does not exist" });
 
-            ShoppingCart? shoppingCart = await _touristRouteRepository.GetShoppingCartById(userId);
+            ShoppingCart? shoppingCart = await _touristRouteRepository.GetShoppingCartByIdAsync(userId);
             if (shoppingCart == null)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                                   new { err = "The shopping cart information for the user cannot be retrived" });
@@ -96,7 +96,7 @@ namespace DoggyRestApi.Controllers
             if (string.IsNullOrWhiteSpace(userId))
                 return NotFound(new { err = "The user does not exist" });
 
-            ShoppingCart? shoppingCart = await _touristRouteRepository.GetShoppingCartById(userId);
+            ShoppingCart? shoppingCart = await _touristRouteRepository.GetShoppingCartByIdAsync(userId);
             if (shoppingCart == null)
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    new { err = "error occurred while querying shopping cart" });
@@ -111,7 +111,42 @@ namespace DoggyRestApi.Controllers
                                   new { err = "error occurred while deleting items from shopping cart" });
 
 
-            return Ok( );
+            return Ok();
+        }
+
+
+
+        [HttpPost("checkout")]
+        public async Task<IActionResult> Checkout()
+        {
+            var userId = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userId))
+                return NotFound(new { err = "The user does not exist" });
+
+            ShoppingCart? shoppingCart = await _touristRouteRepository.GetShoppingCartByIdAsync(userId);
+            if (shoppingCart == null)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   new { err = "error occurred while querying shopping cart" });
+
+            Order order = new Order()
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = userId,
+                OrderItems = _mapper.Map<List<OrderedItem>>(shoppingCart.LineItems),
+                OrderStatus = OrderStatusEnum.Pending,
+                OrderCreationDateTime = DateTime.UtcNow
+            };
+
+            //clear shopping items in shopping cart before creating order
+            shoppingCart.LineItems.Clear();
+
+            await _touristRouteRepository.AddOrderAsync(order);
+            if (!await _touristRouteRepository.SaveAsync())
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                                  new { err = "error occurred while deleting items from shopping cart" });
+
+
+            return Ok(_mapper.Map<OrderDTO>(order));
         }
     }
 }

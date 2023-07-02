@@ -1,5 +1,4 @@
-﻿using DoggyRestApi.DTOs;
-using DoggyRestApi.Models;
+﻿using DoggyRestApi.Models;
 
 namespace DoggyRestApi.Services
 {
@@ -19,15 +18,19 @@ namespace DoggyRestApi.Services
 
         public Task<bool> SaveAsync();
 
-        public Task AddTouristRoutePictures(Guid touristRouteId, ICollection<TouristRoutePicture> touristRoutePicture);
+        public Task AddTouristRoutePicturesAsync(Guid touristRouteId, ICollection<TouristRoutePicture> touristRoutePicture);
 
 
         public void DeleteTouristRoute(TouristRoute touristRoute);
 
         public void CreateShoppingCart(ShoppingCart shoppingCart);
 
-        public Task<ShoppingCart?> GetShoppingCartById(string userId);
+        public Task<ShoppingCart?> GetShoppingCartByIdAsync(string userId);
 
+        public Task AddOrderAsync(Order order);
 
+        public Task<List<Order>?> GetOrdersByUserIdAsync(string userId);
+
+        public Task<Order?> GetOrderByOrderId(Guid orderId);
     }
 }

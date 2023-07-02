@@ -16,6 +16,13 @@ namespace DoggyRestApi.Services
             _appDbContext = appDbContext;
         }
 
+        public async Task AddOrderAsync(Order order)
+        {
+            ArgumentNullException.ThrowIfNull(order);
+
+            await _appDbContext.Orders.AddAsync(order);
+        }
+
         public void AddTouristRoute(TouristRoute touristRoute)
         {
             if (touristRoute == null)
@@ -24,7 +31,7 @@ namespace DoggyRestApi.Services
             _appDbContext.TouristRoutes.Add(touristRoute);
         }
 
-        public async Task AddTouristRoutePictures(Guid touristRouteId, ICollection<TouristRoutePicture> touristRoutePicture)
+        public async Task AddTouristRoutePicturesAsync(Guid touristRouteId, ICollection<TouristRoutePicture> touristRoutePicture)
         {
             if (!(await IsTouristRouteExistAsync(touristRouteId)))
             {
@@ -62,6 +69,31 @@ namespace DoggyRestApi.Services
             _appDbContext.TouristRoutes.Remove(touristRoute);
         }
 
+        public async Task<Order?> GetOrderByOrderId(Guid orderId)
+        {
+            if (orderId == Guid.Empty)
+                throw new ArgumentNullException(nameof(orderId));
+
+            return await _appDbContext.Orders.Include(o => o.OrderItems).Where(o => o.Id == orderId).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Order>?> GetOrdersByUserIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentNullException(userId);
+
+            if (Guid.Parse(userId) == Guid.Empty)//here will throw another exception if parse fails
+                throw new ArgumentNullException("Guid cannot be all zero");
+
+            string lowerUserId = userId.ToLower();
+
+            return await _appDbContext.Orders.
+                                       Include(o => o.OrderItems).ThenInclude(item => item.TouristRoute).
+                                       Where(o => o.OwnerId.ToLower() == lowerUserId).
+                                       ToListAsync();
+
+        }
+
         public async Task<IEnumerable<TouristRoutePicture>> GetPicturesByIdAsync(Guid touristRouteId)
         {
             return await _appDbContext.TouristRoutePictures.Where(
@@ -69,7 +101,7 @@ namespace DoggyRestApi.Services
                 i.TouristRouteId.Equals(touristRouteId)).ToListAsync();
         }
 
-        public async Task<ShoppingCart?> GetShoppingCartById(string userId)
+        public async Task<ShoppingCart?> GetShoppingCartByIdAsync(string userId)
         {
             ArgumentNullException.ThrowIfNull(userId);
 

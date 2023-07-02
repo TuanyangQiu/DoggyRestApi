@@ -4,6 +4,7 @@ using DoggyRestApi.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoggyRestApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230629233507_Add_Model_Order")]
+    partial class Add_Model_Order
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +50,7 @@ namespace DoggyRestApi.Migrations
 
                     b.HasIndex("ShoppingCartId");
 
-                    b.ToTable("LineItem", (string)null);
+                    b.ToTable("LineItem");
                 });
 
             modelBuilder.Entity("DoggyRestApi.Models.Order", b =>
@@ -75,7 +77,7 @@ namespace DoggyRestApi.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("DoggyRestApi.Models.OrderedItem", b =>
@@ -105,7 +107,7 @@ namespace DoggyRestApi.Migrations
 
                     b.HasIndex("TouristRouteId");
 
-                    b.ToTable("OrderedItem", (string)null);
+                    b.ToTable("OrderedItem");
                 });
 
             modelBuilder.Entity("DoggyRestApi.Models.ProjectIdentityUser", b =>
@@ -191,7 +193,7 @@ namespace DoggyRestApi.Migrations
                     b.HasIndex("OwnerId")
                         .IsUnique();
 
-                    b.ToTable("shoppingCarts", (string)null);
+                    b.ToTable("shoppingCarts");
                 });
 
             modelBuilder.Entity("DoggyRestApi.Models.TouristRoute", b =>
@@ -251,7 +253,7 @@ namespace DoggyRestApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TouristRoutes", (string)null);
+                    b.ToTable("TouristRoutes");
 
                     b.HasData(
                         new
@@ -580,7 +582,7 @@ namespace DoggyRestApi.Migrations
 
                     b.HasIndex("TouristRouteId");
 
-                    b.ToTable("TouristRoutePictures", (string)null);
+                    b.ToTable("TouristRoutePictures");
 
                     b.HasData(
                         new
