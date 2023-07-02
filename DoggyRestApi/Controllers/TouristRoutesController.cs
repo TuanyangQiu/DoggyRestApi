@@ -25,9 +25,9 @@ namespace DoggyRestApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllTouristRoutes([FromQuery] QueryTouristRoutesParamDTO parameters)
+        public async Task<IActionResult> GetAllTouristRoutes([FromQuery] QueryTouristRoutesParam parameters)
         {
-            var touristRoutesFromRepo = await touristRouteRepository.GetTouristRoutesAsync(mapper.Map<QueryTouristRoutesParam>(parameters));
+            var touristRoutesFromRepo = await touristRouteRepository.GetTouristRoutesAsync(parameters);
             if (touristRoutesFromRepo?.Count() <= 0)
                 return NotFound(new { err = "No data can be queried out from repository!" });
 
