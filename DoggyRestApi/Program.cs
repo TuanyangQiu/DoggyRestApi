@@ -3,14 +3,10 @@ using DoggyRestApi.Models;
 using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NLog;
 using NLog.Web;
-using System;
-using System.Diagnostics;
 using System.Text;
 
 namespace DoggyRestApi
@@ -78,6 +74,8 @@ namespace DoggyRestApi
                 //Add httpclient for internal http request
                 builder.Services.AddHttpClient();
 
+                builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+                
                 //logger.Info("Enter builder.Build()");
                 var app = builder.Build();
 

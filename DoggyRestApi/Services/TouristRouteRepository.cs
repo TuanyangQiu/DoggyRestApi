@@ -76,7 +76,7 @@ namespace DoggyRestApi.Services
             return await _appDbContext.Orders.Include(o => o.OrderItems).Where(o => o.Id == orderId).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Order>?> GetOrdersByUserIdAsync(string userId, PaginationParam paginationParam)
+        public async Task<PagingQuery<Order>> GetOrdersByUserIdAsync(string userId, PaginationParam paginationParam)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentNullException(userId);
@@ -128,7 +128,7 @@ namespace DoggyRestApi.Services
                                  FirstOrDefaultAsync(i => i.Id.Equals(touristRouteId));
         }
 
-        public async Task<IEnumerable<TouristRoute>?> GetTouristRoutesAsync(QueryTouristRoutesParam queryParam, PaginationParam paginationParam)
+        public async Task<PagingQuery<TouristRoute>> GetTouristRoutesAsync(QueryTouristRoutesParam queryParam, PaginationParam paginationParam)
         {
             IQueryable<TouristRoute> result = _appDbContext.TouristRoutes.Include(i => i.TouristRoutePictures);
 

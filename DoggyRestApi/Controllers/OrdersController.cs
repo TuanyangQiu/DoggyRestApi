@@ -8,6 +8,9 @@ using System.Security.Claims;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using DoggyRestApi.ResourceParameter;
+using DoggyRestApi.Helper;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace DoggyRestApi.Controllers
 {
@@ -20,20 +23,25 @@ namespace DoggyRestApi.Controllers
         private readonly ITouristRouteRepository _touristRouteRepository;
         private readonly IMapper _mapper;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IUrlHelper _urlHelper;
 
         public OrdersController(IHttpContextAccessor httpContextAccessor,
-                                      ITouristRouteRepository touristRouteRepository,
-                                      IMapper mapper,
-                                      IHttpClientFactory httpClientFactory)
+                                ITouristRouteRepository touristRouteRepository,
+                                IMapper mapper,
+                                IHttpClientFactory httpClientFactory,
+                                IUrlHelperFactory urlHelperFactory,
+                                IActionContextAccessor actionContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             _touristRouteRepository = touristRouteRepository;
             _mapper = mapper;
             _httpClientFactory = httpClientFactory;
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
+
         }
 
 
-        [HttpGet]
+        [HttpGet(Name = "GetOrders")]
         public async Task<IActionResult> GetOrders([FromQuery] PaginationParam paginationParam)
         {
             var userId = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -41,11 +49,16 @@ namespace DoggyRestApi.Controllers
                 return NotFound(new { err = "The user does not exist" });
 
 
-            List<Order>? orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
-            if (orders == null || orders.Count == 0)
+            PagingQuery<Order> orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
+            if (orders.DataList.Count == 0)
                 return NotFound(new { err = "no order can be found!" });
 
-            return Ok(_mapper.Map<List<OrderDTO>>(orders));
+            //related page link and pagination info will be responsed in the header to make APIs discoverable
+            PaginationUrlHelper pageUrlHelper = new PaginationUrlHelper(_urlHelper, "GetOrders", orders.PaginationInfo, null);
+            Response.Headers.Add("x-pagination", pageUrlHelper.GetPaginationResponseHeader());
+
+
+            return Ok(_mapper.Map<List<OrderDTO>>(orders.DataList));
         }
 
         [HttpGet("{id}")]
@@ -58,11 +71,11 @@ namespace DoggyRestApi.Controllers
             if (string.IsNullOrWhiteSpace(userId))
                 return NotFound(new { err = "The user does not exist" });
 
-            List<Order>? orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
-            if (orders == null || orders.Count == 0)
+            PagingQuery<Order> orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
+            if (orders.DataList.Count == 0)
                 return NoContent();
 
-            if (!orders.Any(o => o.Id == id))
+            if (!orders.DataList.Any(o => o.Id == id))
                 return NotFound(new { err = $"current use does not have order with id {id}" });
 
             Order? order = await _touristRouteRepository.GetOrderByOrderId(id);
