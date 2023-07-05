@@ -50,9 +50,22 @@ namespace DoggyRestApi.Controllers
             Response.Headers.Add("x-pagination", pageUrlHelper.GetPaginationResponseHeader());
 
             List<TouristRouteDTO> touristRouteDto = _mapper.Map<List<TouristRouteDTO>>(touristRoutesFromRepo.DataList);
-            return Ok(touristRouteDto.ShapeData(parameters.Fields));
+            return Ok(touristRouteDto.ShapeDataForIEnumerable(parameters.Fields));
         }
 
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTouristRouteById([FromRoute] Guid id, [FromQuery] string? fields)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("tourist id cannot be empty!");
+
+            TouristRoute? touristRoute = await _touristRouteRepository.GetTouristRouteByIdAsync(id);
+            if (touristRoute == null)
+                return NotFound($"the tourist route with {id} cannot be found");
+
+            return Ok(_mapper.Map<TouristRouteDTO>(touristRoute).ShapeData4SingleObject(fields));
+        }
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]//jwt token

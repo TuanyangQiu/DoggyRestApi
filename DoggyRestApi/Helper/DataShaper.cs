@@ -15,7 +15,7 @@ namespace DoggyRestApi.Helper
         /// <param name="entities"></param>
         /// <param name="fields"></param>
         /// <returns></returns>
-        public static IEnumerable<ExpandoObject> ShapeData<T>(this IEnumerable<T> entities, string? fields)
+        public static IEnumerable<ExpandoObject> ShapeDataForIEnumerable<T>(this IEnumerable<T> entities, string? fields)
         {
             ArgumentNullException.ThrowIfNull(entities, nameof(entities));
 
@@ -33,11 +33,11 @@ namespace DoggyRestApi.Helper
         /// <param name="entity"></param>
         /// <param name="fields"></param>
         /// <returns></returns>
-        public static ExpandoObject ShapeData(this object entity, string? fields)
+        public static ExpandoObject ShapeData4SingleObject<T>(this T entity, string? fields)
         {
             ArgumentNullException.ThrowIfNull(entity, nameof(entity));
 
-            List<PropertyInfo> properties = GetRequiredProperties<object>(fields);
+            List<PropertyInfo> properties = GetRequiredProperties<T>(fields);
             return FetchDataForEntity(entity, properties);
         }
 
