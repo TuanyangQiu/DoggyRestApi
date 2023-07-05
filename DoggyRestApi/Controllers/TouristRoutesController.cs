@@ -50,7 +50,7 @@ namespace DoggyRestApi.Controllers
             Response.Headers.Add("x-pagination", pageUrlHelper.GetPaginationResponseHeader());
 
             List<TouristRouteDTO> touristRouteDto = _mapper.Map<List<TouristRouteDTO>>(touristRoutesFromRepo.DataList);
-            return Ok(touristRouteDto);
+            return Ok(touristRouteDto.ShapeData(parameters.Fields));
         }
 
 
