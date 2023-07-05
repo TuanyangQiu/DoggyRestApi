@@ -139,9 +139,6 @@ namespace DoggyRestApi.Services
             //Filter out tourist routes with a rating higher than the specified value
             result = result.Where(i => i.Rating >= queryParam.Rating);
 
-            //Filter out tourist routes that match the specified id
-            if (queryParam.Id?.Count > 0)
-                result = result.Where(i => queryParam.Id.Any(j => j.Equals(i.Id)));
 
             //keyword match
             if (!string.IsNullOrWhiteSpace(queryParam.Keyword))

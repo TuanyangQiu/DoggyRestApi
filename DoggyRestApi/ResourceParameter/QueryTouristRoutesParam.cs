@@ -37,7 +37,7 @@
         /// <summary>
         /// Tourist routes' id
         /// </summary>
-        public List<Guid>? Id { get; set; }
+        //public List<Guid>? Id { get; set; }
 
     }
 }
