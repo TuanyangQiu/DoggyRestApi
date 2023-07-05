@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using System.Dynamic;
 
 namespace DoggyRestApi.Controllers
 {
@@ -53,8 +54,7 @@ namespace DoggyRestApi.Controllers
             return Ok(touristRouteDto.ShapeDataForIEnumerable(parameters.Fields));
         }
 
-
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetTouristRouteById")]
         public async Task<IActionResult> GetTouristRouteById([FromRoute] Guid id, [FromQuery] string? fields)
         {
             if (id == Guid.Empty)
@@ -64,10 +64,20 @@ namespace DoggyRestApi.Controllers
             if (touristRoute == null)
                 return NotFound($"the tourist route with {id} cannot be found");
 
-            return Ok(_mapper.Map<TouristRouteDTO>(touristRoute).ShapeData4SingleObject(fields));
+            //response with related apis links to achieve api self-discovoery and HATEOAS
+            List<LinkDTO> linkDTOs = new List<LinkDTO>();
+            linkDTOs.GetRelatedLink(Url, routeName: "GetTouristRouteById", obj: new { id, fields }, rel: "self", method: "GET").
+                     GetRelatedLink(Url, routeName: "CreateTouristRoute", obj: null, rel: "Create_Tourist_Route", method: "POST").
+                     GetRelatedLink(Url, routeName: "PartiallyUpdateTouristRoute", obj: new { touristRouteId = touristRoute.Id }, rel: "Partial_Update_Tourist_Route", method: "PATCH").
+                     GetRelatedLink(Url, routeName: "DeleteTouristRoute", obj: new { touristRouteId = touristRoute.Id }, rel: "Delete_Tourist_Route", method: "DELETE");
+
+
+            ExpandoObject expObject = _mapper.Map<TouristRouteDTO>(touristRoute).ShapeData4SingleObject(fields);
+            expObject.TryAdd("links", linkDTOs);
+            return Ok(expObject);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateTouristRoute")]
         [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
         [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to create a tourist route
         public async Task<IActionResult> CreateTouristRoute([FromBody] NewTouristRouteDTO newTouristRouteDto)
@@ -88,7 +98,7 @@ namespace DoggyRestApi.Controllers
         }
 
 
-        [HttpPatch("{touristRouteId}")]
+        [HttpPatch("{touristRouteId}", Name = "PartiallyUpdateTouristRoute")]
         [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
         [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to update a tourist route
         public async Task<IActionResult> PartiallyUpdateTouristRoute([FromRoute] Guid touristRouteId, [FromBody] JsonPatchDocument<UpdateTouristRouteDTO> patchDoc)
@@ -115,7 +125,7 @@ namespace DoggyRestApi.Controllers
             return BadRequest(new { err = "internal error " });
         }
 
-        [HttpDelete("{touristRouteId}")]
+        [HttpDelete("{touristRouteId}", Name = "DeleteTouristRoute")]
         [Authorize(AuthenticationSchemes = "Bearer")]//jwt token
         [Authorize(Roles = JwtClaimRoles.AdminRole)]//only Admin has permission to delete a tourist route
         public async Task<IActionResult> DeleteTouristRoute([FromRoute] Guid touristRouteId)
