@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Net.Http.Headers;
 using System.Dynamic;
 
 namespace DoggyRestApi.Controllers
@@ -55,7 +56,9 @@ namespace DoggyRestApi.Controllers
         }
 
         [HttpGet("{id}", Name = "GetTouristRouteById")]
-        public async Task<IActionResult> GetTouristRouteById([FromRoute] Guid id, [FromQuery] string? fields)
+        public async Task<IActionResult> GetTouristRouteById([FromHeader(Name = "Accept")] string mediaType,
+                                                             [FromRoute] Guid id,
+                                                             [FromQuery] string? fields)
         {
             if (id == Guid.Empty)
                 return BadRequest("tourist id cannot be empty!");
@@ -64,16 +67,19 @@ namespace DoggyRestApi.Controllers
             if (touristRoute == null)
                 return NotFound($"the tourist route with {id} cannot be found");
 
-            //response with related apis links to achieve api self-discovoery and HATEOAS
-            List<LinkDTO> linkDTOs = new List<LinkDTO>();
-            linkDTOs.GetRelatedLink(Url, routeName: "GetTouristRouteById", obj: new { id, fields }, rel: "self", method: "GET").
-                     GetRelatedLink(Url, routeName: "CreateTouristRoute", obj: null, rel: "Create_Tourist_Route", method: "POST").
-                     GetRelatedLink(Url, routeName: "PartiallyUpdateTouristRoute", obj: new { touristRouteId = touristRoute.Id }, rel: "Partial_Update_Tourist_Route", method: "PATCH").
-                     GetRelatedLink(Url, routeName: "DeleteTouristRoute", obj: new { touristRouteId = touristRoute.Id }, rel: "Delete_Tourist_Route", method: "DELETE");
-
-
             ExpandoObject expObject = _mapper.Map<TouristRouteDTO>(touristRoute).ShapeData4SingleObject(fields);
-            expObject.TryAdd("links", linkDTOs);
+
+            //response with related apis links to achieve api self-discovoery and HATEOAS
+            if (MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? parsedMediatype) &&
+                parsedMediatype.MediaType.StartsWith("application/vnd.Tuanyang.hateoas+", StringComparison.OrdinalIgnoreCase))
+            {
+                List<LinkDTO> linkDTOs = new List<LinkDTO>();
+                linkDTOs.GetRelatedLink(Url, routeName: "GetTouristRouteById", obj: new { id, fields }, rel: "self", method: "GET").
+                         GetRelatedLink(Url, routeName: "CreateTouristRoute", obj: null, rel: "Create_Tourist_Route", method: "POST").
+                         GetRelatedLink(Url, routeName: "PartiallyUpdateTouristRoute", obj: new { touristRouteId = touristRoute.Id }, rel: "Partial_Update_Tourist_Route", method: "PATCH").
+                         GetRelatedLink(Url, routeName: "DeleteTouristRoute", obj: new { touristRouteId = touristRoute.Id }, rel: "Delete_Tourist_Route", method: "DELETE");
+                expObject.TryAdd("links", linkDTOs);
+            }
             return Ok(expObject);
         }
 

@@ -3,6 +3,8 @@ using DoggyRestApi.Models;
 using DoggyRestApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -67,7 +69,10 @@ namespace DoggyRestApi
                 // Add services to the container.
                 builder.Services.AddControllers(
                     opt =>
-                    opt.ReturnHttpNotAcceptable = true)//return http code 406(unacceptable) for undefined format
+                   {
+                       opt.RespectBrowserAcceptHeader = true;
+                       opt.ReturnHttpNotAcceptable = true;//return http code 406(unacceptable) for undefined format
+                   })
                     .AddNewtonsoftJson()
                     .AddXmlDataContractSerializerFormatters();//allow respinsing in xml format
 
@@ -75,7 +80,19 @@ namespace DoggyRestApi
                 builder.Services.AddHttpClient();
 
                 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-                
+
+                //
+                builder.Services.Configure<MvcOptions>(config =>
+                {
+                    var newtonsoftJsonOutputFormatter = config.OutputFormatters.
+                                                               OfType<NewtonsoftJsonOutputFormatter>()?.
+                                                               FirstOrDefault();
+                    if (newtonsoftJsonOutputFormatter != null)
+                        newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.Tuanyang.hateoas+json");
+                }
+                );
+
+
                 //logger.Info("Enter builder.Build()");
                 var app = builder.Build();
 
