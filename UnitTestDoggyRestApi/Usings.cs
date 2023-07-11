@@ -1,0 +1,13 @@
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using AutoMapper;
+global using DoggyRestApi.Controllers;
+global using DoggyRestApi.Models;
+global using DoggyRestApi.Profiles;
+global using DoggyRestApi.Services;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.Infrastructure;
+global using Microsoft.AspNetCore.Mvc.Routing;
+global using Microsoft.Extensions.Logging;
+global using Moq;
+global using UnitTestDoggyRestApi.Helper;
+global using System.Dynamic;
