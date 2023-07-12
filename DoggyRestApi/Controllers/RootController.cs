@@ -24,13 +24,13 @@ namespace DoggyRestApi.Controllers
         {
             List<LinkDTO> links = new List<LinkDTO>();
 
-            links.GetRelatedLink(Url.Link("GetRootLink", null), rel: "self", method: "GET").
-                  GetRelatedLink(Url.Link("GetAllTouristRoutes", null), rel: "Get_All_TouristRoutes", method: "GET").
-                  GetRelatedLink(Url.Link("CreateTouristRoute", null), rel: "Create_TouristRoute", method: "POST").
-                  GetRelatedLink(Url.Link("Login", null), rel: "User_Login", method: "POST").
-                  GetRelatedLink(Url.Link("RegisterNewUser", null), rel: "Register_New_User", method: "POST").
-                  GetRelatedLink(Url.Link("GetShoppingCart", null), rel: "Get_ShoppingCart", method: "GET").
-                  GetRelatedLink(Url.Link("GetOrders", null), rel: "Get_Orders", method: "GET");
+            links.GetRelatedLink(Url.Link("GetRootLink", null), rel: "self", httpMethod: "GET").
+                  GetRelatedLink(Url.Link("GetAllTouristRoutes", null), rel: "Get_All_TouristRoutes", httpMethod: "GET").
+                  GetRelatedLink(Url.Link("CreateTouristRoute", null), rel: "Create_TouristRoute", httpMethod: "POST").
+                  GetRelatedLink(Url.Link("Login", null), rel: "User_Login", httpMethod: "POST").
+                  GetRelatedLink(Url.Link("RegisterNewUser", null), rel: "Register_New_User", httpMethod: "POST").
+                  GetRelatedLink(Url.Link("GetShoppingCart", null), rel: "Get_ShoppingCart", httpMethod: "GET").
+                  GetRelatedLink(Url.Link("GetOrders", null), rel: "Get_Orders", httpMethod: "GET");
 
 
 

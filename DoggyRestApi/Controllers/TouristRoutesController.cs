@@ -74,10 +74,10 @@ namespace DoggyRestApi.Controllers
                 parsedMediatype.MediaType.StartsWith("application/vnd.Tuanyang.hateoas+", StringComparison.OrdinalIgnoreCase))
             {
                 List<LinkDTO> linkDTOs = new List<LinkDTO>();
-                linkDTOs.GetRelatedLink(Url.Link("GetTouristRouteById", new { id, fields }), rel: "self", method: "GET").
-                         GetRelatedLink(Url.Link("CreateTouristRoute", null), rel: "Create_Tourist_Route", method: "POST").
-                         GetRelatedLink(Url.Link("PartiallyUpdateTouristRoute", new { touristRouteId = touristRoute.Id }), rel: "Partial_Update_Tourist_Route", method: "PATCH").
-                         GetRelatedLink(Url.Link("DeleteTouristRoute", new { touristRouteId = touristRoute.Id }), rel: "Delete_Tourist_Route", method: "DELETE");
+                linkDTOs.GetRelatedLink(Url.Link("GetTouristRouteById", new { id, fields }), rel: "self", httpMethod: "GET").
+                         GetRelatedLink(Url.Link("CreateTouristRoute", null), rel: "Create_Tourist_Route", httpMethod: "POST").
+                         GetRelatedLink(Url.Link("PartiallyUpdateTouristRoute", new { touristRouteId = touristRoute.Id }), rel: "Partial_Update_Tourist_Route", httpMethod: "PATCH").
+                         GetRelatedLink(Url.Link("DeleteTouristRoute", new { touristRouteId = touristRoute.Id }), rel: "Delete_Tourist_Route", httpMethod: "DELETE");
                 expObject.TryAdd("links", linkDTOs);
             }
             return Ok(expObject);
