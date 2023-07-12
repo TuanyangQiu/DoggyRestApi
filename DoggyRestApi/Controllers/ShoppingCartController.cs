@@ -27,7 +27,7 @@ namespace DoggyRestApi.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetShoppingCart")]
         public async Task<IActionResult> GetShoppingCart()
         {
             var userId = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;

@@ -33,7 +33,7 @@ namespace DoggyRestApi.Controllers
         }
 
 
-        [HttpPost("Login")]
+        [HttpPost("Login", Name = "Login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
 
@@ -69,7 +69,7 @@ namespace DoggyRestApi.Controllers
         }
 
 
-        [HttpPost("Register")]
+        [HttpPost("Register", Name = "RegisterNewUser")]
         public async Task<IActionResult> RegisterNewUser([FromBody] RegisterNewUserDTO registerNewUserDTO)
         {
             if (registerNewUserDTO == null)
@@ -96,7 +96,7 @@ namespace DoggyRestApi.Controllers
             ShoppingCart shoppingCart = new ShoppingCart()
             {
                 Id = Guid.NewGuid(),
-                OwnerId= identityUser.Id
+                OwnerId = identityUser.Id
             };
 
             touristRouteRepository.CreateShoppingCart(shoppingCart);
@@ -108,7 +108,7 @@ namespace DoggyRestApi.Controllers
             }
 
             if (result.Succeeded)
-                return Ok(new {message="The account has been successfully created"});
+                return Ok(new { message = "The account has been successfully created" });
 
             return BadRequest(result.Errors);
         }
