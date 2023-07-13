@@ -12,7 +12,11 @@ namespace UnitTestDoggyRestApi
         private readonly TouristRoutesController _touristRoutesController;
         public TouristRoutesControllerUnitTest()
         {
-            _mapper ??= new MapperConfiguration(mc => mc.AddProfile(new TouristRouteProfile())).CreateMapper();
+            _mapper ??= new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new TouristRouteProfile());
+                mc.AddProfile(new TouristRoutePictureProfile());
+            }).CreateMapper();
             _mockTouristRouteRepo = new Mock<ITouristRouteRepository>();
             _mockLogger = new Mock<ILogger<TouristRoutesController>>();
             _mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
@@ -24,10 +28,10 @@ namespace UnitTestDoggyRestApi
         private TouristRoutesController GetDefaultTouristRouteControllerInstance()
         {
             return new TouristRoutesController(_mockTouristRouteRepo.Object,
-                                                     _mapper,
-                                                     _mockLogger.Object,
-                                                     _mockUrlHelperFactory.Object,
-                                                     _mockActionContextAccessor.Object);
+                                               _mapper,
+                                               _mockLogger.Object,
+                                               _mockUrlHelperFactory.Object,
+                                               _mockActionContextAccessor.Object);
         }
 
 
@@ -47,7 +51,7 @@ namespace UnitTestDoggyRestApi
             TouristRoutesController controller = _touristRoutesController;
             _mockTouristRouteRepo.Reset();
             _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
-                                         ReturnsAsync(expectedTouristRoute);
+                                               ReturnsAsync(expectedTouristRoute);
 
             //Act
             IActionResult result = await controller.GetTouristRouteById("", _mockTouristRouteId, "");
@@ -56,13 +60,6 @@ namespace UnitTestDoggyRestApi
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = (OkObjectResult)result;
             Assert.IsNotNull(okResult.Value as ExpandoObject);
-            //var actualExpObject = (okResult.Value as ExpandoObject) as IDictionary<string, object>;
-            //Assert.IsTrue(actualExpObject?.ContainsKey("Title"));
-
-            //object? objPriceValue = null;
-            //Assert.IsTrue(actualExpObject?.TryGetValue("Price", out objPriceValue));
-            //Assert.IsTrue(decimal.TryParse(objPriceValue?.ToString(), out decimal price) && price == 201m);
-            //_mockLogger.VerifyLogging("entering GetTouristRouteById", LogLevel.Information);
 
         }
 
@@ -73,10 +70,10 @@ namespace UnitTestDoggyRestApi
             TouristRoutesController controller = _touristRoutesController;
             _mockTouristRouteRepo.Reset();
             _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
-                                          ReturnsAsync(new TouristRoute()
-                                          {
-                                              Id = Guid.Empty,
-                                          });
+                                               ReturnsAsync(new TouristRoute()
+                                               {
+                                                   Id = Guid.Empty,
+                                               });
 
             //Act
             IActionResult result = await controller.GetTouristRouteById("", Guid.Empty, "");
@@ -84,5 +81,180 @@ namespace UnitTestDoggyRestApi
             //Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         }
+
+
+        [TestMethod]
+        public async Task GetTouristRouteById_WithNonExistentTouristRouteId_ReturnNotFound()
+        {
+            //Arrange
+            TouristRoutesController controller = _touristRoutesController;
+            _mockTouristRouteRepo.Reset();
+            _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
+                                               ReturnsAsync(new TouristRoute()
+                                               {
+                                                   Id = _mockTouristRouteId,
+                                               });
+
+            Guid nonExistenTouristRouteId = Guid.NewGuid();
+
+            //Act
+            IActionResult result = await controller.GetTouristRouteById("", nonExistenTouristRouteId, "");
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
+        }
+
+        /// <summary>
+        /// If the fields is null, should response all fields
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task GetTouristRouteById_NotSpecifyFields_ReturnTouristRoute_WithAllFields()
+        {
+            //Arrange
+            TouristRoutesController controller = _touristRoutesController;
+            _mockTouristRouteRepo.Reset();
+            _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
+                                               ReturnsAsync(new TouristRoute()
+                                               {
+                                                   Id = _mockTouristRouteId,
+                                                   Title = "Lakes and Mountains - Salzburg, Lake Wolfgang",
+                                                   Description = "Immerse yourself in the beauty of Austria's lakes and mountains on this 6-day tour.  ",
+                                                   OriginalPrice = 1234m,
+                                                   DiscountPercent = 0.8,
+                                                   CreateTime = DateTime.UtcNow,
+                                                   Features = "Guided tours, Accommodation in lakeside hotels, Transportation within Austria",
+                                                   Notes = "Airfare not included, Valid passport required",
+                                                   Fees = "Entrance fees to attractions, Meals included",
+                                                   TouristRoutePictures = new List<TouristRoutePicture>(),
+                                                   Rating = 4.7,
+                                                   TravelDays = TravelDays.Four,
+                                                   TripType = TripType.BackPackTour,
+                                                   DepartureCity = DepartureCity.Canton
+                                               });
+
+            List<string> allFields = new List<string>() { "Id","Title", "Description", "Price" , "CreateTime", "Notes",
+                                                             "Features",  "Fees", "TouristRoutePictures", "Rating" ,
+                                                               "TravelDays","TripType","DepartureCity" };
+
+            //Act
+            IActionResult result = await controller.GetTouristRouteById("", _mockTouristRouteId, null);
+
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var expObject = (result as OkObjectResult)?.Value as ExpandoObject;
+            IDictionary<string, object>? dictExpObj = expObject as IDictionary<string, object>;
+            Assert.IsNotNull(dictExpObj);
+
+            //whether returns all fields
+            foreach (var i in allFields)
+                Assert.IsTrue(dictExpObj.ContainsKey(i));
+
+        }
+
+        /// <summary>
+        /// specified fields should be fully returned
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task GetTouristRouteById_ReturnTouristRoute_WithSpecifiedFields()
+        {
+            //Arrange
+            TouristRoutesController controller = _touristRoutesController;
+            _mockTouristRouteRepo.Reset();
+            _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
+                                               ReturnsAsync(new TouristRoute()
+                                               {
+                                                   Id = _mockTouristRouteId,
+                                                   Title = "Lakes and Mountains - Salzburg, Lake Wolfgang",
+                                                   Description = "Immerse yourself in the beauty of Austria's lakes and mountains on this 6-day tour.  ",
+                                                   OriginalPrice = 1234m,
+                                                   DiscountPercent = 0.8,
+                                                   CreateTime = DateTime.UtcNow,
+                                                   Features = "Guided tours, Accommodation in lakeside hotels, Transportation within Austria",
+                                                   Notes = "Airfare not included, Valid passport required",
+                                                   Fees = "Entrance fees to attractions, Meals included",
+                                                   TouristRoutePictures = new List<TouristRoutePicture>(),
+                                                   Rating = 4.7,
+                                                   TravelDays = TravelDays.Four,
+                                                   TripType = TripType.BackPackTour,
+                                                   DepartureCity = DepartureCity.Canton
+                                               }); ;
+            string expectedFields = "Title,Description,Features";
+
+
+            //Act
+            IActionResult result = await controller.GetTouristRouteById("", _mockTouristRouteId, expectedFields);
+
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var expObject = (result as OkObjectResult)?.Value as ExpandoObject;
+            IDictionary<string, object>? dictExpObj = expObject as IDictionary<string, object>;
+            Assert.IsNotNull(dictExpObj);
+
+            //whether the response body contains the expected fields
+            Assert.IsTrue(dictExpObj.ContainsKey("Title"));
+            Assert.IsTrue(dictExpObj.ContainsKey("Description"));
+            Assert.IsTrue(dictExpObj.ContainsKey("Features"));
+        }
+
+
+        /// <summary>
+        /// only specified fields can be returned, other fields should not be returned
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task GetTouristRouteById_OnlyReturnTouristRoute_WithSpecifiedFields()
+        {
+            //Arrange
+            TouristRoutesController controller = _touristRoutesController;
+            _mockTouristRouteRepo.Reset();
+            _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
+                                               ReturnsAsync(new TouristRoute()
+                                               {
+                                                   Id = _mockTouristRouteId,
+                                                   Title = "Lakes and Mountains - Salzburg, Lake Wolfgang",
+                                                   Description = "Immerse yourself in the beauty of Austria's lakes and mountains on this 6-day tour.  ",
+                                                   OriginalPrice = 1234m,
+                                                   DiscountPercent = 0.8,
+                                                   CreateTime = DateTime.UtcNow,
+                                                   Features = "Guided tours, Accommodation in lakeside hotels, Transportation within Austria",
+                                                   Notes = "Airfare not included, Valid passport required",
+                                                   Fees = "Entrance fees to attractions, Meals included",
+                                                   TouristRoutePictures = new List<TouristRoutePicture>(),
+                                                   Rating = 4.7,
+                                                   TravelDays = TravelDays.Four,
+                                                   TripType = TripType.BackPackTour,
+                                                   DepartureCity = DepartureCity.Canton
+                                               }); ;
+            string expectedFields = "Title,Description,Features";
+            List<string> unexptedFields = new List<string>() { "Id", "Price" , "CreateTime", "Notes",
+                                                               "Fees", "TouristRoutePictures", "Rating" ,
+                                                               "TravelDays","TripType","DepartureCity"};
+
+            //Act
+            IActionResult result = await controller.GetTouristRouteById("", _mockTouristRouteId, expectedFields);
+
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var expObject = (result as OkObjectResult)?.Value as ExpandoObject;
+            IDictionary<string, object>? dictExpObj = expObject as IDictionary<string, object>;
+            Assert.IsNotNull(dictExpObj);
+
+            //whether the response body contains the unexpected fields
+            foreach (var i in unexptedFields)
+            {
+                Assert.IsFalse(dictExpObj.ContainsKey(i));
+            }
+        }
+
+
+        //case: if some of fields does not existed in model 'TouristRoute', then only return those existed fields
+
+        //case: if all of fields does not existed in model 'TouristRoute', then only return empty body
+
     }
 }
