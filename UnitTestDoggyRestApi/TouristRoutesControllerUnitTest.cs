@@ -252,9 +252,106 @@ namespace UnitTestDoggyRestApi
         }
 
 
-        //case: if some of fields does not existed in model 'TouristRoute', then only return those existed fields
+        /// <summary>
+        /// if some of fields does not existed in model 'TouristRoute', then only return those existed fields
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task GetTouristRouteById_OnlyReturnTouristRoute_WithExistentSpecifiedFields()
+        {
+            //Arrange
+            TouristRoutesController controller = _touristRoutesController;
+            _mockTouristRouteRepo.Reset();
+            _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
+                                               ReturnsAsync(new TouristRoute()
+                                               {
+                                                   Id = _mockTouristRouteId,
+                                                   Title = "Lakes and Mountains - Salzburg, Lake Wolfgang",
+                                                   Description = "Immerse yourself in the beauty of Austria's lakes and mountains on this 6-day tour.  ",
+                                                   OriginalPrice = 1234m,
+                                                   DiscountPercent = 0.8,
+                                                   CreateTime = DateTime.UtcNow,
+                                                   Features = "Guided tours, Accommodation in lakeside hotels, Transportation within Austria",
+                                                   Notes = "Airfare not included, Valid passport required",
+                                                   Fees = "Entrance fees to attractions, Meals included",
+                                                   TouristRoutePictures = new List<TouristRoutePicture>(),
+                                                   Rating = 4.7,
+                                                   TravelDays = TravelDays.Four,
+                                                   TripType = TripType.BackPackTour,
+                                                   DepartureCity = DepartureCity.Canton
+                                               });
+            string existentFields = "Title,Description,Features";
+            string nonExistentFields = "AnyFieldName";
+            string testFields = $"{existentFields},{nonExistentFields}";
 
-        //case: if all of fields does not existed in model 'TouristRoute', then only return empty body
+            //Act
+            IActionResult result = await controller.GetTouristRouteById("", _mockTouristRouteId, testFields);
+
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var expObject = (result as OkObjectResult)?.Value as ExpandoObject;
+            IDictionary<string, object>? dictExpObj = expObject as IDictionary<string, object>;
+            Assert.IsNotNull(dictExpObj);
+
+            //whether the response body contains the existent fields
+            Assert.IsTrue(dictExpObj.ContainsKey("Title"));
+            Assert.IsTrue(dictExpObj.ContainsKey("Description"));
+            Assert.IsTrue(dictExpObj.ContainsKey("Features"));
+
+            //Whether the response body does not contain the nonexistent fields
+            Assert.IsFalse(dictExpObj.ContainsKey(nonExistentFields));
+
+        }
+
+
+        /// <summary>
+        /// if all of fields does not existed in model 'TouristRoute', then only return empty body
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task GetTouristRouteById_ReturnEmptyTouristRoute_IfAllFieldsNotExist()
+        {
+            //Arrange
+            TouristRoutesController controller = _touristRoutesController;
+            _mockTouristRouteRepo.Reset();
+            _mockTouristRouteRepo.Setup(x => x.GetTouristRouteByIdAsync(_mockTouristRouteId)).
+                                               ReturnsAsync(new TouristRoute()
+                                               {
+                                                   Id = _mockTouristRouteId,
+                                                   Title = "Lakes and Mountains - Salzburg, Lake Wolfgang",
+                                                   Description = "Immerse yourself in the beauty of Austria's lakes and mountains on this 6-day tour.  ",
+                                                   OriginalPrice = 1234m,
+                                                   DiscountPercent = 0.8,
+                                                   CreateTime = DateTime.UtcNow,
+                                                   Features = "Guided tours, Accommodation in lakeside hotels, Transportation within Austria",
+                                                   Notes = "Airfare not included, Valid passport required",
+                                                   Fees = "Entrance fees to attractions, Meals included",
+                                                   TouristRoutePictures = new List<TouristRoutePicture>(),
+                                                   Rating = 4.7,
+                                                   TravelDays = TravelDays.Four,
+                                                   TripType = TripType.BackPackTour,
+                                                   DepartureCity = DepartureCity.Canton
+                                               });
+            string nonExistentFields = "AnyFieldName1,AnyFieldName2";
+
+            //Act
+            IActionResult result = await controller.GetTouristRouteById("", _mockTouristRouteId, nonExistentFields);
+
+
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var expObject = (result as OkObjectResult)?.Value as ExpandoObject;
+            IDictionary<string, object>? dictExpObj = expObject as IDictionary<string, object>;
+            Assert.IsNotNull(dictExpObj);
+
+
+            //Whether the response body does not contain the nonexistent fields
+            Assert.IsFalse(dictExpObj.ContainsKey("AnyFieldName1"));
+            Assert.IsFalse(dictExpObj.ContainsKey("AnyFieldName2"));
+
+        }
+
 
     }
 }
