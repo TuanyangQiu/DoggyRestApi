@@ -13,7 +13,7 @@ namespace DoggyRestApi.Database
 {
     public class AppDbContext : IdentityDbContext<ProjectIdentityUser>  //DBContext
     {
-
+        private readonly ILoggerFactory _loggerFactory;
         public DbSet<TouristRoute> TouristRoutes { get; set; }
 
         public DbSet<TouristRoutePicture> TouristRoutePictures { get; set; }
@@ -24,9 +24,10 @@ namespace DoggyRestApi.Database
 
         public DbSet<Order> Orders { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        
+        public AppDbContext(DbContextOptions<AppDbContext> options, ILoggerFactory loggerFactory) : base(options)
         {
-
+            _loggerFactory = loggerFactory;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -104,7 +105,7 @@ namespace DoggyRestApi.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.LogTo(Console.WriteLine, minimumLevel: LogLevel.Information);
+            optionsBuilder.UseLoggerFactory(_loggerFactory);
         }
 
 
