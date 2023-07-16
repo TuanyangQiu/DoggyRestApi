@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NLog;
 using NLog.Web;
 using System.Text;
 
@@ -17,8 +18,8 @@ namespace DoggyRestApi
     {
         public static void Main(string[] args)
         {
-            //var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-            //logger.Debug("init main");
+            var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+            logger.Info("Initialize NLog");
             try
             {
                 var builder = WebApplication.CreateBuilder(args);
@@ -93,7 +94,7 @@ namespace DoggyRestApi
                 );
 
 
-                //logger.Info("Enter builder.Build()");
+                logger.Info("Enter builder.Build()");
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
@@ -120,13 +121,13 @@ namespace DoggyRestApi
 
                 app.Run();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //logger.Error(ex, "Stopped program because of exception");
+                logger.Error(ex, "Stopped program because of exception");
             }
             finally
             {
-                //LogManager.Shutdown();
+                LogManager.Shutdown();
 
             }
         }
