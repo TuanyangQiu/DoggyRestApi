@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using NLog;
 using NLog.Web;
 using System.Text;
@@ -75,7 +77,29 @@ namespace DoggyRestApi
                        opt.ReturnHttpNotAcceptable = true;//return http code 406(unacceptable) for undefined format
                    })
                     .AddNewtonsoftJson()
-                    .AddXmlDataContractSerializerFormatters();//allow respinsing in xml format
+                    .AddXmlDataContractSerializerFormatters() //allow responsing in xml format
+                    .ConfigureApiBehaviorOptions(setupAction =>
+                    {
+                        setupAction.InvalidModelStateResponseFactory = context =>
+                        {
+                            var problemDetail = new ValidationProblemDetails(context.ModelState)
+                            {
+                                Type = "DataValidation",
+                                Title = "DataValidationFailure",
+                                Status = StatusCodes.Status422UnprocessableEntity,
+                                Detail = "Please see the details",
+                                Instance = context.HttpContext.Request.Path
+                            };
+                            problemDetail.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
+
+                            logger.Error(JsonConvert.SerializeObject(problemDetail));
+
+                            return new UnprocessableEntityObjectResult(problemDetail)
+                            {
+                                ContentTypes = { "application/problem+json" }
+                            };
+                        };
+                    });
 
                 //Add httpclient for internal http request
                 builder.Services.AddHttpClient();
