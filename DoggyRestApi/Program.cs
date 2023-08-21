@@ -30,6 +30,19 @@ namespace DoggyRestApi
                 builder.Logging.ClearProviders();
                 builder.Host.UseNLog();
 
+                //CORS
+                var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy(name: MyAllowSpecificOrigins,
+                                      policy =>
+                                      {
+                                          //currently use local host, it can be configured in file in the future
+                                          policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                                      });
+                });
+
+
                 //Configure DBContext
                 builder.Services.AddDbContext<AppDbContext>(optitons =>
                 {
@@ -134,6 +147,10 @@ namespace DoggyRestApi
                 app.UseStaticFiles();
 
                 app.UseRouting();
+
+                //placed after UseRouting, but before UseAuthorization
+                app.UseCors(MyAllowSpecificOrigins);
+
                 app.UseAuthentication();
                 app.UseAuthorization();
 
