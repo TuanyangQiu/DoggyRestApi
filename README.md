@@ -59,6 +59,11 @@ gh repo clone TuanyangQiu/DoggyRestApi
 Update-Database
 ```
 
+5. Navigate to folder **DoggyRestApi** and startup the application:
+```
+dotnet run
+```
+
 ### Installation
 
 Updating...
