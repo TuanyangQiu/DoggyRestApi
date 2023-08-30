@@ -38,7 +38,10 @@ namespace DoggyRestApi
                                       policy =>
                                       {
                                           //currently use local host, it can be configured in file in the future
-                                          policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                                          policy.
+                                          WithOrigins("http://localhost:3000").
+                                          AllowAnyHeader().AllowAnyMethod().
+                                          WithExposedHeaders("x-pagination");
                                       });
                 });
 
