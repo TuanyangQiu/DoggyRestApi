@@ -1,0 +1,577 @@
+{
+	"info": {
+		"_postman_id": "408a1c64-eadb-427b-801a-eb9d8ab61e58",
+		"name": "DoggyRestApi",
+		"description": "This document describes the APIs interacting with the DoggyUI project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18136079"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    //normal user\r\n    \"email\": \"tuanyang.qiu04@gmail.com\",\r\n    \"password\": \"!123ABCabc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5022/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Log in for existed user ."
+					},
+					"response": []
+				},
+				{
+					"name": "RegisterNewUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Email\": \"tuanyang.qiu04@gmail.com\",\r\n    \"Password\": \"!123ABCabc\",\r\n    \"ConfirmPassword\":\"!123ABCabc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5022/auth/Register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"auth",
+								"Register"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Some APIs require JWT token in the request header."
+		},
+		{
+			"name": "TouristRoute",
+			"item": [
+				{
+					"name": "GetAllRoutes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/TouristRoutes?pageNumber=1&pageSize=8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"TouristRoutes"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "e",
+									"disabled": true
+								},
+								{
+									"key": "rating",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "Fields",
+									"value": "id,title,Description",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddNewTouristRoute",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Title\": \"Wellington New Zealand\",\r\n    \"Description\": \"Welcome to Wellington New Zealand\",\r\n    \"OriginalPrice\": 1800.50,\r\n    \"DiscountPercent\": 0.7,\r\n    \"Features\":\"temprary no feature\",\r\n    \"Fees\": \"temprary no fee\",\r\n    \"Notes\": \"temprary no notes\",\r\n    \"TouristRoutePictures\": [\r\n        {\r\n            \"PictureName\": \"Wellington101.jpg\"\r\n        },\r\n        {\r\n            \"PictureName\": \"Wellington102.jpg\"\r\n        },\r\n        {\r\n            \"PictureName\": \"Wellington103.jpg\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5022/TouristRoutes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"TouristRoutes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateTouristRoutePartially",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODc3NjQ2NzEsImV4cCI6MTY4Nzg1MTA3MSwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.ZI5xqyIhCf-srdS_sEXaPDMjUDMHMm6aJ6crXIGSjWQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"opt\": \"replace\",\r\n        \"path\": \"/Title\",\r\n        \"value\": \"迪拜+阿布扎比6日跟团游(6钻)\"\r\n    },\r\n    {\r\n        \"opt\": \"replace\",\r\n        \"path\": \"/description\",\r\n        \"value\": \"Welcome to Dibai\"\r\n    },\r\n    {\r\n        \"opt\": \"replace\",\r\n        \"path\": \"/DiscountPercent\",\r\n        \"value\": 0.9\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5022/TouristRoutes/88cf89b9-e4b5-4b42-a5bf-622bd3039601",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"TouristRoutes",
+								"88cf89b9-e4b5-4b42-a5bf-622bd3039601"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddNewTouristRoutePictures",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"PictureName\": \"dibai-tower-01.jpg\"\r\n    },\r\n    {\r\n        \"PictureName\": \"dibai-tower-02.jpg\"\r\n    },\r\n    {\r\n        \"PictureName\": \"dibai-tower-03.jpg\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5022/TouristRoutes/fb6d4f10-79ed-4aff-a915-4ce29dc9c7e1/pictures",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"TouristRoutes",
+								"fb6d4f10-79ed-4aff-a915-4ce29dc9c7e1",
+								"pictures"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetPicturesById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/TouristRoutes/6e5e8533-9e02-40e7-b6f3-3ee549d64301/Pictures",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"TouristRoutes",
+								"6e5e8533-9e02-40e7-b6f3-3ee549d64301",
+								"Pictures"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteTouristRoute",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5022/TouristRoutes/8e12b06f-6268-42a1-8269-2232e539459e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"TouristRoutes",
+								"8e12b06f-6268-42a1-8269-2232e539459e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetTouristRouteById",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/vnd.Tuanyang.hateoas+json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/problem+json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/TouristRoutes/4D65C663-8E08-4B48-8E94-8B5A5AC62EAA?Fields=id,title,Description,",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"TouristRoutes",
+								"4D65C663-8E08-4B48-8E94-8B5A5AC62EAA"
+							],
+							"query": [
+								{
+									"key": "Fields",
+									"value": "id,title,Description,"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ShoppingModule",
+			"item": [
+				{
+					"name": "GetShoppingCart",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZWIyMTU1NS03OTY1LTRkYzMtYjY1Zi04NWEzYTJlYjNmYWIiLCJuYmYiOjE2ODk4ODk2MzksImV4cCI6MTY4OTk3NjAzOSwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.BptPHABXKk3ps2qaslzRG8PdegEmFlfh77W8sgHnEkU",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/shoppingCart",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"shoppingCart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddShoppingItem",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODg2MjA4ODQsImV4cCI6MTY4ODcwNzI4NCwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.XgYIvijZ9_iR0OBj4bx_NafTfo2uv4Vz0ery46fuyXk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TouristRouteId\":\"6FC6FA8A-8E1E-421B-9F8B-48255BD8FD22\"\r\n    //\"TouristRouteId\":\"16E5D1ED-2E5A-4CE7-A8DA-15BB2C2073C9\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/shoppingCart/item",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"shoppingCart",
+								"item"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Checkout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgwODE4MjQsImV4cCI6MTY4ODE2ODIyNCwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.GBNgcjzaWQY_PCca9eAqwdt43ZWsoWe_zg81kNdmYFk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/shoppingCart/checkout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"shoppingCart",
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteShoppingItems",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODc4MTkwMTQsImV4cCI6MTY4NzkwNTQxNCwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.yE0axq_v_V_2dWfBp1DCFwDVDkLYpNoOdNfQP3IHzOs",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/shoppingCart/item?deleteItem=2&deleteItem=3&deleteItem=9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"shoppingCart",
+								"item"
+							],
+							"query": [
+								{
+									"key": "deleteItem",
+									"value": "2"
+								},
+								{
+									"key": "deleteItem",
+									"value": "3"
+								},
+								{
+									"key": "deleteItem",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "GetOrdersByUserId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgzNDAyMDcsImV4cCI6MTY4ODQyNjYwNywiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.e6K0W4lgsPwS3lk4jVxoCyN96-3F83HrWldqfMP_R6c",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/orders?pagenumber=1&pagesize=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "pagenumber",
+									"value": "1"
+								},
+								{
+									"key": "pagesize",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetOrderByOrderId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgyNzA4MTMsImV4cCI6MTY4ODM1NzIxMywiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.jk4sdX3dC0m87Vgrx7QlCyrj5drdJOrQ8I3rEvNCPt0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/orders/a823f6b0-c84d-471a-bbd3-43df7c4e8bc1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"orders",
+								"a823f6b0-c84d-471a-bbd3-43df7c4e8bc1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PlaceOrder",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgyNzA4MTMsImV4cCI6MTY4ODM1NzIxMywiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.jk4sdX3dC0m87Vgrx7QlCyrj5drdJOrQ8I3rEvNCPt0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/orders/placeorder/a823f6b0-c84d-471a-bbd3-43df7c4e8bc1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"orders",
+								"placeorder",
+								"a823f6b0-c84d-471a-bbd3-43df7c4e8bc1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Root",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5022/root",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"root"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
