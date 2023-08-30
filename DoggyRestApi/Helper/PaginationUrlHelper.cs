@@ -36,7 +36,7 @@ namespace DoggyRestApi.Helper
         private string? GetPreviousPageUrl()
         {
             if (!_pageInfo.HasPreviousPage)
-                return null;
+                return string.Empty;
 
             var obj = CreateObject(_pageInfo.CurrentPageNum - 1, _pageInfo.PageSize, _queryParamObj);
 
@@ -47,7 +47,7 @@ namespace DoggyRestApi.Helper
         private string? GetNextPageUrl()
         {
             if (!_pageInfo.HasNextPage)
-                return null;
+                return string.Empty;
 
             var obj = CreateObject(_pageInfo.CurrentPageNum + 1, _pageInfo.PageSize, _queryParamObj);
 
