@@ -70,7 +70,14 @@ namespace DoggyRestApi.Controllers
             {
                 TouristRouteId = addItem2ShoppingCartDTO.TouristRouteId,
                 OriginalPrice = touristRoute.OriginalPrice,
-                DiscountPercent = touristRoute.DiscountPercent
+                DiscountPercent = touristRoute.DiscountPercent,
+                Title = touristRoute.Title,
+                Description = touristRoute.Description,
+                DepartureTime = touristRoute.DepartureTime,
+                DepartureCity = touristRoute?.DepartureCity,
+                Rating = touristRoute?.Rating,
+                TravelDays = touristRoute?.TravelDays,
+                TripType = touristRoute.TripType
             };
 
             shoppingCart.LineItems.Add(item);
