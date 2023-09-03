@@ -49,7 +49,10 @@ namespace DoggyRestApi.Controllers
             //step 2. create jwt
             //step 2.1 hearder
             ProjectIdentityUser user = await userManager.FindByNameAsync(loginDto.Email);
-            List<Claim> claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.Sub, user.Id) };
+            List<Claim> claims = new List<Claim> {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Name, user.Email)
+            };
             foreach (string role in await userManager.GetRolesAsync(user))
                 claims.Add(new Claim(ClaimTypes.Role, role));
 
@@ -90,7 +93,7 @@ namespace DoggyRestApi.Controllers
             var result = await userManager.CreateAsync(identityUser, registerNewUserDTO.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
-            
+
 
             //step3. Create a shopping cart for the new user
             ShoppingCart shoppingCart = new ShoppingCart()
