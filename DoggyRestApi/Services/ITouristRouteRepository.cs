@@ -34,5 +34,7 @@ namespace DoggyRestApi.Services
         public Task<PagingQuery<Order>> GetOrdersByUserIdAsync(string userId, PaginationParam paginationParam);
 
         public Task<Order?> GetOrderByOrderId(Guid orderId);
+
+        public Task<Order?> GetPendingOrdersByUserIdAsync(string userId);
     }
 }

@@ -95,6 +95,24 @@ namespace DoggyRestApi.Services
 
         }
 
+        public async Task<Order?> GetPendingOrdersByUserIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentNullException(userId);
+
+            if (Guid.Parse(userId) == Guid.Empty)//here will throw another exception if parse fails
+                throw new ArgumentNullException("Guid cannot be all zero");
+
+            string lowerUserId = userId.ToLower();
+
+            var result = _appDbContext.Orders.
+                                       Include(o => o.OrderItems).ThenInclude(item => item.TouristRoute).
+                                       Where(o => o.OwnerId.ToLower() == lowerUserId && o.OrderStatus==OrderStatusEnum.Pending);
+
+            return await result.FirstOrDefaultAsync();
+
+        }
+
         public async Task<IEnumerable<TouristRoutePicture>> GetPicturesByIdAsync(Guid touristRouteId)
         {
             return await _appDbContext.TouristRoutePictures.Where(

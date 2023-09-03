@@ -41,24 +41,48 @@ namespace DoggyRestApi.Controllers
         }
 
 
-        [HttpGet(Name = "GetOrders")]
-        public async Task<IActionResult> GetOrders([FromQuery] PaginationParam paginationParam)
+        //[HttpGet(Name = "GetOrders")]
+        //public async Task<IActionResult> GetOrders([FromQuery] PaginationParam paginationParam)
+        //{
+        //    var userId = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //    if (string.IsNullOrWhiteSpace(userId))
+        //        return NotFound(new { err = "The user does not exist" });
+
+
+        //    PagingQuery<Order> orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
+        //    if (orders.DataList.Count == 0)
+        //        return NotFound(new { err = "no order can be found!" });
+
+        //    //related page link and pagination info will be responsed in the header to make APIs discoverable
+        //    PaginationUrlHelper pageUrlHelper = new PaginationUrlHelper(_urlHelper, "GetOrders", orders.PaginationInfo, null);
+        //    Response.Headers.Add("x-pagination", pageUrlHelper.GetPaginationResponseHeader());
+
+
+        //    return Ok(_mapper.Map<List<OrderDTO>>(orders.DataList));
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> GetPendingOrdersByUserId()
         {
             var userId = _httpContextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrWhiteSpace(userId))
                 return NotFound(new { err = "The user does not exist" });
 
 
-            PagingQuery<Order> orders = await _touristRouteRepository.GetOrdersByUserIdAsync(userId, paginationParam);
-            if (orders.DataList.Count == 0)
+            Order? orders = await _touristRouteRepository.GetPendingOrdersByUserIdAsync(userId);
+            if (orders == null)
+                return NotFound(new { err = "no order can be found!" });
+
+            if (orders.OrderItems.Count == 0)
                 return NotFound(new { err = "no order can be found!" });
 
             //related page link and pagination info will be responsed in the header to make APIs discoverable
-            PaginationUrlHelper pageUrlHelper = new PaginationUrlHelper(_urlHelper, "GetOrders", orders.PaginationInfo, null);
-            Response.Headers.Add("x-pagination", pageUrlHelper.GetPaginationResponseHeader());
+            //PaginationUrlHelper pageUrlHelper = new PaginationUrlHelper(_urlHelper, "GetOrders", orders.PaginationInfo, null);
+            //Response.Headers.Add("x-pagination", pageUrlHelper.GetPaginationResponseHeader());
 
 
-            return Ok(_mapper.Map<List<OrderDTO>>(orders.DataList));
+            //return Ok(_mapper.Map<List<OrderDTO>>(orders.OrderItems));
+            return Ok(_mapper.Map<OrderDTO>(orders));
         }
 
         [HttpGet("{id}")]
