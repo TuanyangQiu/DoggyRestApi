@@ -36,7 +36,7 @@
 								"login"
 							]
 						},
-						"description": "Log in for existed user ."
+						"description": "Log in for existed user.\n\nIf the login is successful, the jwt token will be returned in text form. The jwt token will be used in the header of other requests that require authorization."
 					},
 					"response": []
 				},
@@ -47,7 +47,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"Email\": \"tuanyang.qiu04@gmail.com\",\r\n    \"Password\": \"!123ABCabc\",\r\n    \"ConfirmPassword\":\"!123ABCabc\"\r\n}",
+							"raw": "{\r\n    \"Email\": \"tuanyang.qiu04@gmail.com\",\r\n    \"Password\": \"!123ABCabc\",\r\n    \"ConfirmPassword\":\"!123ABCabc\"\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -65,7 +65,8 @@
 								"auth",
 								"Register"
 							]
-						}
+						},
+						"description": "This API is for new user registration.\n\npassword should include number, lower-case letter, upper-case letter, non-alphanumberice character."
 					},
 					"response": []
 				}
@@ -87,7 +88,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:5022/TouristRoutes?pageNumber=1&pageSize=8",
+							"raw": "http://localhost:5022/TouristRoutes",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -99,7 +100,7 @@
 							"query": [
 								{
 									"key": "keyword",
-									"value": "e",
+									"value": "New Zealand",
 									"disabled": true
 								},
 								{
@@ -109,7 +110,8 @@
 								},
 								{
 									"key": "pageNumber",
-									"value": "1"
+									"value": "1",
+									"disabled": true
 								},
 								{
 									"key": "Fields",
@@ -118,10 +120,12 @@
 								},
 								{
 									"key": "pageSize",
-									"value": "8"
+									"value": "8",
+									"disabled": true
 								}
 							]
-						}
+						},
+						"description": "Get all tourist routes that matched query parameters.\n\n<h3>query params</h3>\n\n- **keyword** will be used to search in tourist routes' title\n- The value range of **rating** is an integer from 0 to 5\n- If the **pageSize** is not given, the default size is 5. The maximum size is 20.\n- If the **pageNumber** is not given, the default page number is 1.\n- **fields** are used for data shaping. if the **fields** is not given, all fields will be returned, otherwise only return the specific fields."
 					},
 					"response": []
 				},
@@ -133,6 +137,11 @@
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer <PasteYourJwtTokenWithAdminPermission>",
 								"type": "text"
 							}
 						],
@@ -155,7 +164,8 @@
 							"path": [
 								"TouristRoutes"
 							]
-						}
+						},
+						"description": "<h2>Create a new tourist route</h2>\n\n<h4>Authorization</h4>\n\nThis API requires admin role permission.\n\nThe jwt token can be obtained by invoking Authentication/Login API.  \nThen, paste the token in the **Authorization** in the request header.\n"
 					},
 					"response": []
 				},
@@ -171,7 +181,7 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODc3NjQ2NzEsImV4cCI6MTY4Nzg1MTA3MSwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.ZI5xqyIhCf-srdS_sEXaPDMjUDMHMm6aJ6crXIGSjWQ",
+								"value": "bearer <PasteYourJwtTokenWithAdminPermission>",
 								"type": "text"
 							}
 						],
@@ -195,7 +205,8 @@
 								"TouristRoutes",
 								"88cf89b9-e4b5-4b42-a5bf-622bd3039601"
 							]
-						}
+						},
+						"description": "<h2>Update tourist route</h2>\n\n<h4>Authorization</h4>\n\nThis API requires admin role permission.\n\nThe jwt token can be obtained by invoking Authentication/Login API.  \nThen, paste the token in the **Authorization** in the request header.\n\n<h4>URL</h4>\n\n- Format: [http://localhost:5022/TouristRoutes/{touristRouteID:guid}](http://localhost:5022/TouristRoutes/{touristRouteID:guid})\n    \n\n- Example:  \n    [http://localhost:5022/TouristRoutes/88cf89b9-e4b5-4b42-a5bf-622bd3039601](http://localhost:5022/TouristRoutes/88cf89b9-e4b5-4b42-a5bf-622bd3039601)\n    \n\n#### Body\n\n  \nThe body format refers to **JsonPatchDocument** specification."
 					},
 					"response": []
 				},
@@ -207,6 +218,11 @@
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer <PasteYourJwtTokenWithAdminPermission>",
 								"type": "text"
 							}
 						],
@@ -231,7 +247,8 @@
 								"fb6d4f10-79ed-4aff-a915-4ce29dc9c7e1",
 								"pictures"
 							]
-						}
+						},
+						"description": "<h2>Add pictures for the tourist route</h2>\n\n<h4>Authorization</h4>\n\nThis API requires admin role permission.\n\nThe jwt token can be obtained by invoking Authentication/Login API.  \nThen, paste the token in the **Authorization** in the request header.\n\n<h4>URL</h4>\n\n- Format: http://localhost:5022/TouristRoutes/{touristRouteId:guid}/pictures\n\n- Example:  \n http://localhost:5022/TouristRoutes/fb6d4f10-79ed-4aff-a915-4ce29dc9c7e1/pictures\n    \n\n#### Body\n\nThe body format refers to **JsonPatchDocument** specification."
 					},
 					"response": []
 				},
@@ -266,7 +283,13 @@
 					"name": "DeleteTouristRoute",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer <PasteYourJwtTokenWithAdminPermission>",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:5022/TouristRoutes/8e12b06f-6268-42a1-8269-2232e539459e",
 							"protocol": "http",
@@ -323,7 +346,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "The APIs collection **TouristRoute** allows normal customers to browse tourist routes, and allows administrators to operate tourist routes"
 		},
 		{
 			"name": "ShoppingModule",
@@ -335,7 +359,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZWIyMTU1NS03OTY1LTRkYzMtYjY1Zi04NWEzYTJlYjNmYWIiLCJuYmYiOjE2ODk4ODk2MzksImV4cCI6MTY4OTk3NjAzOSwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.BptPHABXKk3ps2qaslzRG8PdegEmFlfh77W8sgHnEkU",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
 								"type": "text"
 							}
 						],
@@ -360,13 +384,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODg2MjA4ODQsImV4cCI6MTY4ODcwNzI4NCwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.XgYIvijZ9_iR0OBj4bx_NafTfo2uv4Vz0ery46fuyXk",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"TouristRouteId\":\"6FC6FA8A-8E1E-421B-9F8B-48255BD8FD22\"\r\n    //\"TouristRouteId\":\"16E5D1ED-2E5A-4CE7-A8DA-15BB2C2073C9\"\r\n}",
+							"raw": "{\r\n    \"TouristRouteId\":\"a9e6e77e-f971-446b-9a23-09d23c722be2\"\r\n    //\"TouristRouteId\":\"16E5D1ED-2E5A-4CE7-A8DA-15BB2C2073C9\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -374,12 +398,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/shoppingCart/item",
+							"raw": "http://localhost:5022/shoppingCart/item",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "5022",
 							"path": [
 								"shoppingCart",
 								"item"
@@ -395,7 +419,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgwODE4MjQsImV4cCI6MTY4ODE2ODIyNCwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.GBNgcjzaWQY_PCca9eAqwdt43ZWsoWe_zg81kNdmYFk",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
 								"type": "text"
 							}
 						],
@@ -421,12 +445,12 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODc4MTkwMTQsImV4cCI6MTY4NzkwNTQxNCwiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.yE0axq_v_V_2dWfBp1DCFwDVDkLYpNoOdNfQP3IHzOs",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "http://localhost:5022/shoppingCart/item?deleteItem=2&deleteItem=3&deleteItem=9",
+							"raw": "http://localhost:5022/shoppingCart/item?deleteItem=1&deleteItem=20002&deleteItem=10002",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -439,22 +463,23 @@
 							"query": [
 								{
 									"key": "deleteItem",
-									"value": "2"
+									"value": "1"
 								},
 								{
 									"key": "deleteItem",
-									"value": "3"
+									"value": "20002"
 								},
 								{
 									"key": "deleteItem",
-									"value": "9"
+									"value": "10002"
 								}
 							]
 						}
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "The APIs collection **ShoppingModule** allows normal customers to browse, add, delete and check out items in their shopping cart."
 		},
 		{
 			"name": "Order",
@@ -466,7 +491,42 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgzNDAyMDcsImV4cCI6MTY4ODQyNjYwNywiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.e6K0W4lgsPwS3lk4jVxoCyN96-3F83HrWldqfMP_R6c",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5022/orders?pagenumber=1&pagesize=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5022",
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "pagenumber",
+									"value": "1"
+								},
+								{
+									"key": "pagesize",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetPendingOrdersByUserId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
 								"type": "text"
 							}
 						],
@@ -501,7 +561,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgyNzA4MTMsImV4cCI6MTY4ODM1NzIxMywiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.jk4sdX3dC0m87Vgrx7QlCyrj5drdJOrQ8I3rEvNCPt0",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
 								"type": "text"
 							}
 						],
@@ -527,7 +587,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlNzBlMjc4Ni0zZDQ4LTRlZDItOTgxNy03MWZlNWIzZWYyZWUiLCJuYmYiOjE2ODgyNzA4MTMsImV4cCI6MTY4ODM1NzIxMywiaXNzIjoiVHVhbnlhbmdRaXUiLCJhdWQiOiJEb2dneVJlc3RBcGlVc2VycyJ9.jk4sdX3dC0m87Vgrx7QlCyrj5drdJOrQ8I3rEvNCPt0",
+								"value": "bearer <PasteYourJwtTokenWithNormalUserPermission>",
 								"type": "text"
 							}
 						],
@@ -553,7 +613,7 @@
 			"name": "Root",
 			"item": [
 				{
-					"name": "New Request",
+					"name": "GetRootApis",
 					"request": {
 						"method": "GET",
 						"header": [],
